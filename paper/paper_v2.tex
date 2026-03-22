@@ -1,0 +1,1741 @@
+\documentclass[10pt]{amsart}
+
+\usepackage{amsfonts,amsthm,amssymb,amsmath,amscd}
+\usepackage{mathrsfs}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,citecolor=blue,urlcolor=black,linkbordercolor={1 0 0}}
+\usepackage{mathtools}
+\usepackage{enumitem}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{question}[theorem]{Question}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{notation}{Notation}
+
+% Operators and commands
+\DeclareMathOperator{\cont}{cont}
+\DeclareMathOperator{\sqf}{sqf}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\PGL}{PGL}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Spec}{Spec}
+
+\newcommand{\BZ}{\mathbb{Z}}
+\newcommand{\BQ}{\mathbb{Q}}
+\newcommand{\BC}{\mathbb{C}}
+\newcommand{\BP}{\mathbb{P}}
+\newcommand{\BF}{\mathbb{F}}
+\newcommand{\on}{\operatorname}
+\newcommand{\defeq}{\vcentcolon=}
+
+\allowdisplaybreaks
+
+% Title and metadata
+\title[On the Quartic Invariant of Odd Degree Binary Forms]{On the Quartic Invariant of Odd Degree Binary Forms}
+
+\author{Ashvin A.~Swaminathan \vspace*{-0.3in}}
+
+\date{\today}
+
+\AtEndDocument{\bigskip{\footnotesize%
+  \noindent\textsc{Department of Mathematics, Harvard University, \mbox{Cambridge, MA 02138}} \par
+  \textit{E-mail address}, Ashvin A.~Swaminathan: \texttt{ashvins@math.harvard.edu}
+}}
+
+\subjclass[2020]{13A50, 11C08 (primary), and 11B65, 14L24 (secondary)}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%======================================================================
+% ABSTRACT
+%======================================================================
+\begin{abstract}
+We determine the squarefree part of the scalar factor that arises
+when the quartic invariant of the generic binary form $F$ of odd
+degree $2n+1$ is expressed as the discriminant of the unique
+quadratic covariant $(F,F)_{2n}$.  This squarefree part is exactly~$p$
+when $n+2$ is a power of an odd prime~$p$, and $1$ otherwise.
+Equivalently, for each prime~$p$: $v_2(S(n))$ is always even, and for
+odd~$p$, $v_p(S(n))$ is odd if and only if $n+2$ is a power of~$p$.  This
+generalizes the classical identity $\disc(H(F))=-3\cdot\disc(F)$ for
+binary cubics, which dates back to the work of Cayley and Sylvester in
+the 1850s.  The proof, which involves substantial explicit coefficient
+analysis and $p$-adic deformation arguments, was developed using an
+AI-assisted research workflow\textup{:} the author's earlier partial
+attempts were completed through systematic collaboration with Claude Code
+(Anthropic), and key arithmetic lemmas were formally verified in Lean~4 using
+Aristotle (Harmonic).  We describe this workflow in detail as a case study in
+AI-assisted mathematical research.  We also discuss representation-theoretic,
+geometric, and arithmetic interpretations of the quadratic covariant.
+\end{abstract}
+
+%======================================================================
+% SECTION 1: INTRODUCTION
+%======================================================================
+\section{Introduction}\label{sec:intro}
+
+A classical problem in invariant theory is to compute the scalar
+factors that arise when a given invariant or covariant of a binary form
+is constructed by two different methods.  In this paper we determine the
+squarefree part of the scalar factor relating the quartic invariant
+of the generic odd-degree binary form to the discriminant of its
+unique quadratic covariant.  The proof was completed using
+an AI-assisted workflow built around Claude Code (Anthropic) and
+Aristotle (Harmonic), and we describe this workflow in detail as a case
+study in AI-assisted mathematical research.
+
+\subsection{The classical case of binary cubics}
+Let $F(x,z) = f_0x^3 + f_1x^2z + f_2 x z^2 + f_3 z^3 \in \BC[x,z]$ be a
+binary cubic form.  The \emph{Hessian} of~$F$ is the binary quadratic form
+\begin{equation}\label{eq:defhess}
+H(F) \defeq \frac{1}{4} \cdot \det \begin{pmatrix}
+\dfrac{\partial^2 F}{\partial x^2} & \dfrac{\partial^2 F}{\partial x \,\partial z} \\[6pt]
+\dfrac{\partial^2 F}{\partial z \,\partial x} & \dfrac{\partial^2 F}{\partial z^2}
+\end{pmatrix}
+= (3f_0f_2 - f_1^2)\,x^2 + (9f_0f_3 - f_1f_2)\,xz + (3f_1f_3 - f_2^2)\,z^2.
+\end{equation}
+The form $H(F)$ is covariant under the action of $\SL_2(\BC)$ that sends
+$F(x,z) \mapsto F((x,z) \cdot \gamma)$ for each $\gamma \in \SL_2(\BC)$;
+moreover, it is the unique covariant of $F$ with \emph{degree}~$2$ (in the $f_i$)
+and \emph{order}~$2$ (in $x,z$).  The Hessian covariant was introduced by
+Cayley and studied extensively by Sylvester in the 1850s; we refer
+to~\cite{Elliott1895} and~\cite{GraceYoung1903} for detailed classical
+treatments, and to~\cite{Olver1999} for a modern account.
+
+Since the discriminant of $H(F)$ is an
+$\SL_2(\BC)$-invariant of degree~$4$ and order~$0$, it must be a scalar
+multiple of $\disc(F)$.  Indeed, a direct computation yields
+\begin{equation}\label{eq:dischess}
+\disc(H(F)) = -3 \cdot \disc(F).
+\end{equation}
+The specific scalar factor $-3$ for binary cubics appears in the classical
+texts of Elliott~\cite{Elliott1895} and Grace--Young~\cite{GraceYoung1903}.
+More generally, a recurring theme in classical invariant theory is the
+determination of the precise scalar factors relating different
+constructions of the same covariant.  For instance,
+McMahon~\cite{McMahon1889} computed the scalar factor relating two
+expressions for the Hessian of a binary form of degree~$n$.
+
+The factor $-3$ appearing in~\eqref{eq:dischess} has deep number-theoretic
+significance.  The Scholz reflection principle~\cite{Scholz1932} states that
+if $D<0$ is a fundamental discriminant, then the $3$-rank of the class group
+of $\BQ(\sqrt{D})$ is either equal to or one larger than that of
+$\BQ(\sqrt{-3D})$.  The identity~\eqref{eq:dischess} underlies the
+relationship between cubic fields and their quadratic resolvents: under
+the Delone--Faddeev correspondence, the Hessian maps a binary cubic of
+discriminant~$D$ to a quadratic form of discriminant~$-3D$, and this
+mechanism is at the heart of the Davenport--Heilbronn density theorems
+for cubic fields~\cite{DavenportHeilbronn1971} and their modern
+extensions~\cite{Bhargava2004b,BhargavaShankarTsimerman2013,BhargavaVarma2016}.
+
+\subsection{The generalization to odd degree}
+
+The objective of this paper is to determine the higher-degree
+analogue of the scalar factor $-3$ in~\eqref{eq:dischess} for binary
+forms of any given odd degree $2n+1$.  The exact scalar is not itself a
+single integer but rather a product of factorial expressions; what we
+compute is its squarefree part, which turns out to be governed by the
+prime-power structure of~$n+2$.  Fix $n \ge 1$ and let
+\begin{equation}\label{eq:genericF}
+F(x,z) = \sum_{j=0}^{2n+1} f_j \, x^{2n+1-j} z^j
+\end{equation}
+be the generic binary form of degree $2n+1$ with indeterminate coefficients
+$f_0,\dots,f_{2n+1}$ over~$\BZ$.  The \emph{quadratic covariant}
+$Q_n = (F,F)_{2n}$ is the $(2n)$-th transvectant of $F$ with itself (see
+\S\ref{sec:prelim} for the precise normalization).  Transvectants, also
+known as \emph{\"Uberschiebungen} in the German literature, provide the
+fundamental algebraic mechanism for producing covariants from binary forms;
+we refer to Olver~\cite[Chapter~5]{Olver1999} and
+Kung--Rota~\cite{KungRota1984} for comprehensive modern treatments,
+and to Elliott~\cite{Elliott1895} and Grace--Young~\cite{GraceYoung1903}
+for the classical development.  The form
+$Q_n = A_n x^2 + B_n xz + C_n z^2$ is a binary quadratic, unique up to
+scalar among degree-$2$, order-$2$ covariants of~$F$
+(see \S\ref{subsec:rep-theory}).
+
+The discriminant
+\begin{equation}\label{eq:Delta-def}
+\Delta_n \defeq B_n^2 - 4A_nC_n \in \BZ[f_0,\dots,f_{2n+1}]
+\end{equation}
+is the quartic invariant of~$F$.  We define the \emph{content}
+$S(n) = \cont(\Delta_n)$ to be the greatest common divisor of all integer
+coefficients of~$\Delta_n$, and write $\sqf(m)$ for the squarefree part of a
+nonzero integer~$m$.
+
+
+\subsection{Main result}
+
+For an integer $m \ge 1$, define
+\begin{equation}\label{eq:a-def}
+a(m) \defeq \begin{cases}
+p, & \text{if } m = p^k \text{ for some odd prime } p \text{ and } k \ge 1,\\
+1, & \text{otherwise.}
+\end{cases}
+\end{equation}
+
+\begin{theorem}\label{thm:main}
+For every integer $n \ge 1$ and every prime~$p$, the parity
+of~$v_p(S(n))$ is determined as follows:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $v_2(S(n))$ is always even.
+\item For every odd prime~$p$, $v_p(S(n))$ is odd if and only
+if $n+2$ is a power of~$p$.
+\end{enumerate}
+Equivalently,
+\[
+\sqf(S(n)) = a(n+2),
+\]
+where $\sqf$ denotes the squarefree part.
+\end{theorem}
+
+Computationally, the sequence $\sqf(S(n))$ for $n = 1, 2, 3, \dots$ begins
+$3, 1, 5, 1, 7, 1, 3, 1, 11, 1, 13, \dots$,
+which is the sequence~\href{https://oeis.org/A155457}{A155457}
+in the OEIS.  Theorem~\ref{thm:main} identifies this sequence completely. Notably, the theorem is accompanied by a Lean~4 formalization ($\approx 6000$ lines)
+and a companion Jupyter notebook that computationally tests every stated
+formula and lemma; see~\S\ref{sec:ai} for details.
+
+In $p$-adic terms, part~(ii) of Theorem~\ref{thm:main} is equivalent to:
+for every odd prime~$p$,
+\begin{equation}\label{eq:vp-parity}
+v_p(S(n)) \equiv \begin{cases}
+1 \pmod{2}, & \text{if } n+2 = p^k,\\
+0 \pmod{2}, & \text{otherwise.}
+\end{cases}
+\end{equation}
+\begin{example}
+For small values of~$n$:
+\begin{itemize}
+\item $n=1$ ($m=3$): $\sqf(S(1))=3$. This recovers the factor $-3$
+  in~\eqref{eq:dischess}.
+\item $n=2$ ($m=4$): $\sqf(S(2))=1$, since $4=2^2$ is a power of the
+  even prime~$2$.
+\item $n=3$ ($m=5$): $\sqf(S(3))=5$.
+\item $n=4$ ($m=6$): $\sqf(S(4))=1$, since $6$ is not a prime power.
+\end{itemize}
+\end{example}
+
+\begin{remark}
+It is initially surprising that the prime-power criterion involves $n+2$
+rather than $n$ itself.  This shift arises naturally from the binomial
+coefficients $\binom{n+2}{r}$ that appear when one simplifies the factorial
+expressions in the transvectant; see the proof of Lemma~\ref{lem:factor},
+where the substitution $m = n+2$ converts the factorial product into a
+squared factor times $E_m(r)$.
+\end{remark}
+
+\begin{remark}
+The reason $p=2$ is excluded from part~(ii) is structural:
+the factor of~$4$ in $\Delta_n = B_n^2 - 4A_nC_n$ ensures that even
+in the prime-power case $m = 2^k$, the $2$-adic valuation picks up
+$+2$ rather than $+1$, keeping the parity even; see
+Proposition~\ref{prop:p2}.
+\end{remark}
+
+\subsection{Outline of the proof}
+
+The proof of Theorem~\ref{thm:main} occupies
+Sections~\ref{sec:prelim}--\ref{sec:padic}, and proceeds as follows.
+
+\begin{enumerate}[label=(\arabic*)]
+\item In Section~\ref{sec:prelim} we fix the transvectant normalization,
+derive explicit two-term formulas for the linear forms $D_i$ and $E_i$
+appearing in the transvectant sum, and state the resulting formulas for
+$A_n$, $B_n$, $C_n$.
+
+\item In Section~\ref{sec:disc} we expand the discriminant
+$\Delta_n = B_n^2 - 4A_nC_n$ and compute, in closed form, the coefficient
+$C_{n,r}$ of a controlled family of test monomials
+$M_{n,r} = f_a f_{a+1} f_b f_{b+1}$.  We then factor $C_{n,r}$ to
+isolate a non-square factor $E_m(r)$ and prove that $\gcd_r E_m(r)$
+is a power of~$2$.
+
+\item In Section~\ref{sec:content} we show that the content $S(n)$
+divides the gcd of the $C_{n,r}$, prove the binomial gcd theorem
+$g(m) = \gcd_{1 \le r \le m-1} \binom{m}{r}$ via Kummer's and Lucas'
+theorems, and show that the odd part of the gcd is governed by~$g(m)$.
+
+\item In Section~\ref{sec:padic} we complete the proof of the
+prime-to-$3$ theorem by analyzing the
+$p$-adic parity of~$v_p(S(n))$ for each odd prime~$p \ge 5$.  We show that
+primes dividing~$n$ contribute even valuation; for the non-prime-power
+case we use cancellation-free $B_n$ coefficients; and for the
+prime-power case we establish a rank-$1$ collapse of $Q_n^{\#}$
+modulo~$p$ followed by a first-order deformation argument.  The same
+prime-power argument also treats the case $p=3$ when $n+2$ is a power
+of~$3$.  In the same section, we show that $v_2(S(n))$ is always
+even; this follows from the fact that the discriminant formula
+$\Delta_n = B_n^2 - 4A_nC_n$ has a built-in factor of~$4$ that
+shifts the $2$-adic deformation valuation by~$+2$ instead of~$+1$.
+\end{enumerate}
+
+Section~\ref{sec:ai} describes the AI-assisted workflow used to complete
+this project.
+
+\subsection{History and methodology}\label{subsec:history}
+
+This problem was suggested to the author by Manjul Bhargava as one of the
+first questions to consider at the start of the author's PhD.  The author
+worked on it for several weeks and developed the basic framework that
+appears in this paper: the identification of the test monomial family
+$M_{n,r}$ and its connection to binomial coefficients, the role of
+Lucas' and Kummer's theorems, and the even-valuation phenomenon for primes
+dividing~$n$.  However, completing the proof required substantial technical
+work---particularly the cancellation-free coefficient analysis, the rank-$1$
+collapse argument in the prime-power case, and the first-order deformation
+that forces odd $p$-adic valuation---and the project stalled.
+
+The proof was completed using an AI-assisted workflow built around Claude
+Code (Anthropic's command-line AI tool).  This workflow proceeded in
+several stages:
+\begin{enumerate}[label=(\roman*)]
+\item \emph{Numerical experimentation.} Claude Code wrote Python scripts
+that computed $S(n)$ for $n \le 30$, verified all coefficient formulas,
+and tested proof strategies by evaluating explicit specializations of the
+generic form.  These experiments confirmed the theorem and identified the
+precise mechanism (the $p$-adic deformation at distance $t = p^{k-1}$)
+that forces odd valuation in the prime-power case.
+
+\item \emph{Proof construction.}  Working from the author's earlier notes,
+Claude Code helped develop complete proofs for the missing cases,
+particularly the composite case involving $p = 3$ (where the end-anchored
+witness approach fails, but the cancellation-free $B_n$ method works
+uniformly) and the general prime-power case $m = p^k$ for $k \ge 2$.
+
+\item \emph{Formal verification.} Key lemmas were submitted to Aristotle
+(Harmonic's Lean~4 formalization tool), which produced machine-checked
+proofs of the binomial GCD theorem, the $E_m(r)$ gcd lemma, the
+$p^2$-divisibility result, and the cancellation-free $B_n$ coefficient
+formula.
+
+\item \emph{Exposition.} The present paper was largely written by
+Claude Code, with the author providing the original mathematical
+notes, directing the overall narrative, and reviewing the output.
+The introduction and interpretive sections draw on the author's
+framing of the problem; the technical exposition was generated
+by Claude Code from the proof constructions in the earlier phases.
+\end{enumerate}
+
+The project is notable not for the depth of the final result---which is a
+concrete but somewhat technical computation in classical invariant
+theory---but for the fact that the workflow described above was able to
+handle it at all.  The proof involves pages of intricate algebraic
+manipulation (tracking signs, factorial cancellations, binomial
+coefficient identities), careful $p$-adic analysis with case splits
+for different primes and prime powers, and explicit specialization
+arguments that must be tailored to the structure of the problem.
+This is precisely the kind of computation-heavy, detail-sensitive
+mathematical work that one might expect to be most resistant to
+AI assistance, and the success of the approach suggests that
+AI-assisted workflows may be effective for a broader class of
+research problems in number theory and algebra.
+
+%======================================================================
+% SECTION 2: PRELIMINARIES AND NORMALIZATION
+%======================================================================
+\section{Preliminaries and normalization}\label{sec:prelim}
+
+We begin by recalling the definition and normalization of the transvectant
+operation, which is the central tool in our construction.  The transvectant
+(German: \emph{\"Uberschiebung}) was developed by Cayley, Sylvester, and
+their contemporaries in the mid-nineteenth century as the primary method
+for producing new covariants from old ones.  The operation was placed on a
+firm representation-theoretic footing by the symbolic method; see
+Kung--Rota~\cite[\S4]{KungRota1984} for a modern account of this classical
+technique, and Olver~\cite[Chapter~5]{Olver1999} for a thorough textbook
+treatment.
+
+\begin{definition}[Transvectant]\label{def:transvectant}
+For binary forms $G$ of degree $d$ and $H$ of degree $e$, the $r$-th
+transvectant is
+\begin{equation}\label{eq:transvectant}
+(G,H)_r = \sum_{i=0}^{r} (-1)^i \binom{r}{i}\,
+\frac{\partial^r G}{\partial x^{r-i}\,\partial z^{i}}\;
+\frac{\partial^r H}{\partial x^{i}\,\partial z^{r-i}}.
+\end{equation}
+This is the standard normalization with no extra $1/(r!)$ or
+$1/\binom{d}{r}\binom{e}{r}$ factor.  We refer to~\cite{Olver1999}
+and~\cite{Elliott1895} for background on transvectants and classical
+invariant theory.  We note that some authors
+(e.g.,~\cite{KungRota1984}) include additional normalizing factors;
+throughout this paper, we use~\eqref{eq:transvectant} without
+modification.
+\end{definition}
+
+Throughout, $F(x,z)=\sum_{j=0}^{2n+1}f_j\,x^{2n+1-j}z^j$ is the generic
+form of degree $N+1 \defeq 2n+1$, so $N=2n$.  We set $m=n+2$.
+
+\begin{lemma}\label{lem:Qn}
+$Q_n=(F,F)_{2n}=A_n x^2+B_n xz+C_n z^2$, where
+\begin{equation}\label{eq:Qnsum}
+Q_n = \sum_{i=0}^{N}(-1)^i\binom{N}{i}\,D_i\,E_i,
+\end{equation}
+with the two-term linear forms
+\begin{align}
+D_i &= \alpha_i\,f_i\,x + \beta_i\,f_{i+1}\,z,\label{eq:Di}\\
+E_i &= \beta_i\,f_{N-i}\,x + \alpha_i\,f_{N+1-i}\,z,\label{eq:Ei}
+\end{align}
+and the factorials $\alpha_i=(2n+1-i)!\,i!$, $\beta_i=(2n-i)!\,(i+1)!$.
+
+In particular,
+\begin{align}
+A_n &= \sum_{i=0}^{N}(-1)^i\binom{N}{i}\,\alpha_i\beta_i\,f_i\,f_{N-i},
+\label{eq:An}\\
+B_n &= \sum_{i=0}^{N}(-1)^i\binom{N}{i}
+\bigl(\alpha_i^2\,f_i\,f_{N+1-i}+\beta_i^2\,f_{i+1}\,f_{N-i}\bigr),
+\label{eq:Bn}\\
+C_n &= \sum_{i=0}^{N}(-1)^i\binom{N}{i}\,\alpha_i\beta_i\,
+f_{i+1}\,f_{N+1-i}.\label{eq:Cn}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\textbf{Computing $D_i$.}
+A typical monomial of $F$ is $f_j\,x^{2n+1-j}z^j$.
+Taking $\frac{\partial^N}{\partial x^{N-i}\partial z^i}$:
+\[
+\frac{\partial^N (f_j x^{2n+1-j}z^j)}{\partial x^{N-i}\partial z^i}
+= f_j \cdot \frac{(2n+1-j)!}{(2n+1-j-(N-i))!}\cdot\frac{j!}{(j-i)!}
+\cdot x^{2n+1-j-(N-i)}z^{j-i}.
+\]
+For this to be nonzero we need $j \le i+1$ and $j \ge i$, so only
+$j=i$ and $j=i+1$ survive.
+
+For $j=i$: the result is $\alpha_i f_i \cdot x$.
+For $j=i+1$: the result is $\beta_i f_{i+1} \cdot z$.
+Hence $D_i = \alpha_i f_i x + \beta_i f_{i+1} z$.
+
+\medskip
+\emph{Computation of $E_i$.}
+Similarly, $\frac{\partial^N F}{\partial x^i\partial z^{N-i}}$
+is nonzero only for $j=N-i$ and $j=N+1-i$, giving
+$E_i = \beta_i f_{N-i} x + \alpha_i f_{N+1-i} z$.
+
+\medskip
+\emph{Expanding $D_i E_i$.}
+\begin{align*}
+D_i E_i &= (\alpha_i f_i x + \beta_i f_{i+1} z)
+            (\beta_i f_{N-i} x + \alpha_i f_{N+1-i} z) \\
+&= \alpha_i\beta_i\,f_i f_{N-i}\,x^2
+ + (\alpha_i^2\,f_i f_{N+1-i}+\beta_i^2\,f_{i+1}f_{N-i})\,xz
+ + \alpha_i\beta_i\,f_{i+1}f_{N+1-i}\,z^2.
+\end{align*}
+Substituting into~\eqref{eq:Qnsum} and collecting the $x^2$, $xz$, $z^2$
+coefficients gives~\eqref{eq:An}--\eqref{eq:Cn}.
+\end{proof}
+
+\begin{definition}\label{def:content}
+We write $\Delta_n = B_n^2 - 4A_nC_n$ for the discriminant of $Q_n$, and
+$S(n)=\cont(\Delta_n)$ for the gcd of all integer coefficients of $\Delta_n$
+viewed as a polynomial in $f_0,\dots,f_{2n+1}$.
+\end{definition}
+
+\subsection{Representation-theoretic uniqueness}\label{subsec:rep-theory}
+
+Let $V$ denote the standard $2$-dimensional representation of $\SL_2$ over a
+field of characteristic~$0$, and identify binary forms of degree $d$ with
+$\Sym^d(V^\vee)$.  The Clebsch--Gordan decomposition
+(see~\cite[Lecture~11]{FultonHarris1991}) gives an $\SL_2$-equivariant splitting
+\begin{equation}\label{eq:CG}
+\Sym^d(V^\vee) \otimes \Sym^d(V^\vee)
+\;\cong\;
+\bigoplus_{i=0}^{d} \Sym^{2d-2i}(V^\vee).
+\end{equation}
+When $d = 2n+1$ is odd, the summand $\Sym^2(V^\vee)$ occurs precisely for
+$i = d-1 = 2n$.  In particular, $\Sym^2(V^\vee)$ occurs with
+\emph{multiplicity~$1$} in~\eqref{eq:CG}, and therefore there exists, up to
+an overall scalar, a unique $\SL_2$-equivariant bilinear map
+\[
+\pi_{2n}: \Sym^{2n+1}(V^\vee) \times \Sym^{2n+1}(V^\vee) \longrightarrow
+\Sym^2(V^\vee).
+\]
+The $(2n)$-th transvectant $(\cdot,\cdot)_{2n}$ is a concrete realization of
+$\pi_{2n}$, and our normalization in~\S\ref{sec:prelim} fixes the scalar.
+Thus the existence and canonicity of $Q_n(f) = (f,f)_{2n}$ is forced by
+representation theory: it is the \emph{unique} quadratic covariant of
+order~$2$ arising quadratically from an odd-degree form.
+
+Having established the explicit shape of the quadratic covariant $Q_n$ and
+defined the content $S(n)$, we turn in the next section to expanding the
+discriminant $\Delta_n = B_n^2 - 4A_nC_n$ and extracting the coefficients
+of a carefully chosen family of test monomials that will control the
+$p$-adic valuation of~$S(n)$.
+
+%======================================================================
+% SECTION 3: DISCRIMINANT EXPANSION AND COEFFICIENT EXTRACTION
+%======================================================================
+\section{Discriminant expansion and explicit coefficient extraction}
+\label{sec:disc}
+
+We now expand the discriminant $\Delta_n = B_n^2 - 4A_nC_n$ and extract
+the coefficients of a controlled family of test monomials.  These
+coefficients, computed in closed form in Lemma~\ref{lem:Cnr}, factor
+into a squared part and a non-square factor $E_m(r)$ whose gcd over~$r$
+is a power of~$2$ (Lemma~\ref{lem:Egcd}).
+
+\subsection{Test monomials}
+
+We introduce the following family of test monomials, whose coefficients in $\Delta_n$ will control the $p$-adic valuation of the content.
+
+\begin{definition}[Test monomials]\label{def:test-monomials}
+For $2 \le r \le m-1$ (equivalently $2 \le r \le n+1$), define
+\[
+M_{n,r} = f_a\,f_{a+1}\,f_b\,f_{b+1},\quad
+a=n+1-r,\quad b=n-1+r.
+\]
+Note $a+b=2n=N$, so $N-a=b$ and $N-b=a$.  Also $a+1 < b$
+when $r \ge 2$, so $M_{n,r}$ involves four distinct indeterminates.
+Its coefficient in $\Delta_n$ is denoted $C_{n,r}$.
+\end{definition}
+
+\subsection{Closed formula for $C_{n,r}$}
+
+The main computation of this subsection is the following closed-form expression for the coefficient of each test monomial.
+
+\begin{lemma}\label{lem:Cnr}
+For $2 \le r \le n+1$,
+\begin{equation}\label{eq:Cnr}
+C_{n,r} = -8\,(N!)^2\,(n+r)!\,(n+r-1)!\,(n-r+2)!\,(n-r+1)!\,
+\bigl(2n^2+4n+2r^2-4r+3\bigr).
+\end{equation}
+This identity can be verified for specific values of $n$ and $r$ using
+the companion notebook.
+\end{lemma}
+
+\begin{proof}
+The monomial $M_{n,r}=f_af_{a+1}f_bf_{b+1}$ can appear in
+$\Delta_n=B_n^2-4A_nC_n$ from two sources.
+
+\medskip\noindent\emph{Contribution from $-4A_nC_n$.}
+In $A_n$, the monomial $f_a f_b$ arises from indices $i=a$ and $i=b$, giving
+$[f_af_b]\,A_n = (-1)^a\binom{N}{a}\alpha_a\beta_a
++ (-1)^b\binom{N}{b}\alpha_b\beta_b$.
+Similarly $[f_{a+1}f_{b+1}]\,C_n$ equals the same expression.  Hence
+\begin{equation}\label{eq:4AC}
+[M_{n,r}](-4A_nC_n) = -4K^2, \quad
+K = (-1)^a\binom{N}{a}\alpha_a\beta_a
++ (-1)^b\binom{N}{b}\alpha_b\beta_b.
+\end{equation}
+
+Since $b-a=2r-2$ is even, $(-1)^b=(-1)^a$ and $\binom{N}{b}=\binom{N}{a}$.
+The factorials satisfy
+$\alpha_a\beta_a = (n+r)!(n+1-r)!(n+r-1)!(n+2-r)! = \alpha_b\beta_b$.
+A direct computation gives
+\begin{equation}\label{eq:K-term}
+\binom{N}{a}\alpha_a\beta_a = N!\,(n+r)!\,(n+2-r)!,
+\end{equation}
+and therefore $K = -2(-1)^{n-r}\,N!\,(n+r)!\,(n-r+2)!$,
+so
+\begin{equation}\label{eq:4K2}
+4K^2 = 16\,(N!)^2\,(n+r)!^2\,(n-r+2)!^2.
+\end{equation}
+
+\medskip\noindent\emph{Contribution from $B_n^2$.}
+We have $[M_{n,r}]\,B_n^2 = 2UV$, where
+$U=[f_af_{b+1}]\,B_n$ and $V=[f_{a+1}f_b]\,B_n$.
+
+Using the notation $P_i = (-1)^i\binom{N}{i}\alpha_i^2$
+and $R_i = (-1)^i\binom{N}{i}\beta_i^2$, which simplify to
+\begin{align*}
+P_i &= (-1)^i\,N!\,(N-i)!\,i!\,(N+1-i)^2,\\
+R_i &= (-1)^i\,N!\,(N-i)!\,i!\,(i+1)^2,
+\end{align*}
+one finds that $U$ receives four terms ($T_1=P_a$, $T_2=P_{b+1}$,
+$T_3=R_{a-1}$, $T_4=R_b$), which combine to give
+\begin{equation}\label{eq:U}
+U = -2(-1)^{n-r}\,(2r-1)\,N!\,(n+r)!\,(n-r+1)!.
+\end{equation}
+Similarly, $V$ receives four terms ($S_1=P_{a+1}$, $S_2=P_b$,
+$S_3=R_a$, $S_4=R_{b-1}$), giving
+\begin{equation}\label{eq:V}
+V = 2(-1)^{n-r}(2r-3)\,N!\,(n+r-1)!\,(n-r+2)!.
+\end{equation}
+
+\medskip\noindent\emph{Combining.}
+Set $P_0 = (N!)^2(n+r)!(n+r-1)!(n-r+2)!(n-r+1)!$.  Then
+$2UV = -8(2r-1)(2r-3)\,P_0$ and $4K^2 = 16(n+r)(n-r+2)\,P_0$.
+Expanding:
+\begin{align*}
+&-8(4r^2-8r+3) - 16(n^2+2n-r^2+2r) \\
+&= -8(2n^2+4n+2r^2-4r+3).
+\end{align*}
+This yields~\eqref{eq:Cnr}.
+\end{proof}
+
+\subsection{Factoring $C_{n,r}$}
+
+We now factor the closed-form expression for $C_{n,r}$ to isolate the arithmetic content.
+
+\begin{lemma}\label{lem:factor}
+With $m=n+2$, define
+\begin{equation}\label{eq:Em}
+E_m(r) = (m-r)(m+r-2)\bigl(2(m-1)^2+2(r-1)^2-1\bigr).
+\end{equation}
+Then
+\begin{equation}\label{eq:Cnr-factored}
+C_{n,r} = -8\bigl[N!\,(m+r-3)!\,(m-r-1)!\bigr]^2 \cdot E_m(r).
+\end{equation}
+In particular, for any odd prime~$p$,
+\begin{equation}\label{eq:vp-Cnr}
+v_p(C_{n,r}) = 2\,v_p\bigl(N!(m+r-3)!(m-r-1)!\bigr) + v_p(E_m(r)),
+\end{equation}
+so $v_p(C_{n,r}) \equiv v_p(E_m(r)) \pmod{2}$.
+\end{lemma}
+
+\begin{proof}
+Substituting $n=m-2$ into the quadratic factor gives
+$2n^2+4n+2r^2-4r+3 = 2(m-1)^2+2(r-1)^2-1$.
+The factorial product factors as
+$(n+r)!(n+r-1)!(n-r+2)!(n-r+1)! = (m+r-2)(m-r)\cdot[(m+r-3)!(m-r-1)!]^2$,
+which yields~\eqref{eq:Cnr-factored}.
+\end{proof}
+
+\begin{lemma}\label{lem:Egcd}
+For any odd prime $p$ and $m \ge 7$,
+$p \nmid \gcd_{2 \le r \le m-1} E_m(r)$.
+\end{lemma}
+
+\begin{proof}
+For $p \mid E_m(r)$, at least one of the three factors must vanish
+modulo~$p$: (i)~$r \equiv m$, (ii)~$r \equiv 2-m$, or
+(iii)~$2(m-1)^2+2(r-1)^2 \equiv 1 \pmod{p}$.
+
+For $p \ge 5$: conditions (i) and (ii) each exclude one residue class,
+and (iii) excludes at most two, for a total of at most~$4$ excluded classes
+out of $p \ge 5$.  So some~$r$ avoids all three.
+
+For $p = 3$: a case-by-case analysis on $m \bmod 3$ shows that at least one
+residue class of $r$ modulo~$3$ avoids all conditions.  Specifically:
+\begin{itemize}
+\item $m \equiv 0$: the class $r \equiv 1$ works.
+\item $m \equiv 1$: the classes $r \equiv 0$ and $r \equiv 2$ work.
+\item $m \equiv 2$: the class $r \equiv 1$ works.
+\end{itemize}
+For $m \ge 7$, the interval $\{2,\dots,m-1\}$ has length at least~$5$,
+so it contains representatives of all three residue classes modulo~$3$.
+\end{proof}
+
+Having established the closed-form expression for the test coefficients
+$C_{n,r}$ and isolated the non-square factor $E_m(r)$, we now relate
+the gcd of the $C_{n,r}$ to the content $S(n)$ through the classical theory
+of binomial coefficient divisibility.
+
+%======================================================================
+% SECTION 4: FROM EXPLICIT COEFFICIENTS TO THE CONTENT
+%======================================================================
+\section{From explicit coefficients to the content}\label{sec:content}
+
+Since $S(n)$ divides every coefficient of $\Delta_n$, we have
+$S(n) \mid \gcd_{r} C_{n,r}$.  By~\eqref{eq:vp-Cnr} and
+Lemma~\ref{lem:Egcd}, for each odd prime~$p$ the minimum of
+$v_p(C_{n,r})$ over~$r$ is even, so the odd part of the gcd is governed
+by the binomial coefficients embedded in the factorial structure.
+We make this precise via the classical binomial gcd theorem, which
+identifies $g(m) = \gcd_{1 \le r \le m-1} \binom{m}{r}$ as~$p$
+when $m$ is a prime power~$p^k$ and~$1$ otherwise.
+
+\subsection{The binomial gcd theorem}
+
+The key input from elementary number theory is the following classical result.
+
+\begin{lemma}[Binomial gcd]\label{lem:bingcd}
+For $m \ge 2$,
+\[
+g(m) \defeq \gcd_{1 \le r \le m-1} \binom{m}{r}
+= \begin{cases}
+p, & \text{if } m = p^k \text{ for some prime } p \text{ and } k \ge 1,\\
+1, & \text{otherwise.}
+\end{cases}
+\]
+\end{lemma}
+
+\begin{remark}
+This is a well-known result, sometimes called the ``prime-power
+characterization of the gcd of binomial coefficients.''  It follows from
+a combination of two classical results in number theory: Kummer's
+theorem~\cite{Kummer1852} on the $p$-adic valuation of binomial
+coefficients, and Lucas' theorem~\cite{Lucas1878} on binomial coefficients
+modulo a prime.  We include the proof for completeness and because we need
+the precise statement for the content analysis that follows.
+\end{remark}
+
+\begin{proof}
+\textbf{Case $m = p^k$.}
+By Kummer's theorem~\cite{Kummer1852}, $v_p\binom{p^k}{r}$ equals the
+number of carries when adding $r$ and $p^k - r$ in base~$p$.  For any
+$0 < r < p^k$, at least one carry occurs (at the lowest nonzero
+digit position of~$r$), so $p \mid \binom{p^k}{r}$.  For $r = p^{k-1}$,
+exactly one carry occurs, so $v_p\binom{p^k}{p^{k-1}} = 1$.  Hence
+$g(p^k) = p$.
+
+\textbf{Case $m$ not a prime power.}
+For each prime $p \mid m$, since $m$ is not a $p$-power, $m$ has at least
+two nonzero base-$p$ digits.  Let $m_j > 0$ at a position $j$ that is not
+the leading position.  By Lucas' theorem~\cite{Lucas1878}, taking $r = p^j$
+gives $\binom{m}{p^j} \equiv m_j \pmod{p}$, with $0 < m_j < p$, so
+$p \nmid \binom{m}{r}$.  For primes $p \nmid m$, $m$ is not a $p$-power,
+so the same argument applies (the units digit of~$m$ in base~$p$ is
+nonzero).  Hence $g(m) = 1$.
+\end{proof}
+
+\subsection{Relating the gcd to $S(n)$}
+
+Combining the results of the previous subsection with the binomial gcd, we obtain the following.
+
+\begin{remark}\label{rem:Cnr-parity}
+By~\eqref{eq:vp-Cnr}, $v_p(C_{n,r}) \equiv v_p(E_m(r)) \pmod{2}$ for
+each~$r$, and Lemma~\ref{lem:Egcd} shows that $E_m(r)$ does not
+contribute any \emph{uniform} odd prime factor to the gcd of the
+$C_{n,r}$.  However, this does not by itself determine the parity of
+$v_p(\gcd_r C_{n,r})$, since a different $r$ could in principle achieve
+a smaller valuation of opposite parity.  The definitive parity analysis
+is carried out in~\S\ref{subsec:nonpp} and~\S\ref{subsec:pp} using
+explicit coefficient witnesses.
+\end{remark}
+
+With the binomial gcd theorem and the parity observations in
+Remark~\ref{rem:Cnr-parity} as motivation, we now turn to the heart of
+the proof: the $p$-adic parity analysis that distinguishes the prime-power
+case from the non-prime-power case.
+
+%======================================================================
+% SECTION 5: p-ADIC PARITY AND PROOF OF THE MAIN THEOREM
+%======================================================================
+\section{$p$-adic parity and proof of the main theorem}\label{sec:padic}
+
+We now analyze the $p$-adic valuation of $S(n)$ for each prime~$p$,
+treating three cases according to the relationship between $p$ and
+$m = n+2$: primes dividing~$n$ (\S\ref{subsec:pdivn}), the non-prime-power
+case (\S\ref{subsec:nonpp}), and the prime-power case (\S\ref{subsec:pp}).
+We then assemble the proof of Theorem~\ref{thm:main} in~\S\ref{subsec:synthesis},
+treat the prime~$2$ in~\S\ref{subsec:p2}, and record the prime-power case for
+$p=3$ as well.
+
+\subsection{Primes dividing $n$ contribute even valuation}\label{subsec:pdivn}
+
+We first handle the case where the prime divides $n$ rather than $m$.
+
+\begin{lemma}\label{lem:Qnmodp}
+If $p$ is an odd prime with $p \mid n$, then every coefficient of
+$Q_n$ is divisible by $p^2$.
+\end{lemma}
+
+\begin{proof}
+We show $p \mid \alpha_i$ and $p \mid \beta_i$ for every $0 \le i \le N$.
+Since $p \mid n$ and $p$ is odd, $p \le n$.  For~$\alpha_i = (2n+1-i)!\,i!$:
+if $i \ge p$ then $p \mid i!$; if $i < p$ then $2n+1-i \ge 2n+2-p \ge n+2 > p$,
+so $p \mid (2n+1-i)!$.  Similarly for $\beta_i = (2n-i)!\,(i+1)!$.
+
+Since $p \mid \alpha_i$ and $p \mid \beta_i$, each $D_i \equiv 0$ and
+$E_i \equiv 0$ modulo~$p$, giving $D_i E_i \equiv 0 \pmod{p^2}$.
+\end{proof}
+
+\begin{remark}\label{rem:pdivn}
+When $p \mid n$, Lemma~\ref{lem:Qnmodp} provides the stronger structural
+information that $e_p \ge 2$ (i.e., every coefficient of $Q_n$ is
+divisible by $p^2$, not just by $p^{e_p}$ for some $e_p \ge 1$).
+The even-parity conclusion $v_p(S(n)) = 2e_p$ follows from
+Proposition~\ref{prop:nonpp} below, which handles all non-prime-power
+cases uniformly.
+\end{remark}
+
+\begin{remark}
+For odd~$p$: $p \mid n$ implies $p \nmid m = n+2$, so the conditions
+``$p \mid n$'' and ``$p \mid m$'' are disjoint.
+\end{remark}
+
+\subsection{The non-prime-power case}\label{subsec:nonpp}
+
+We now show that $v_p(S(n))$ is even whenever $m$ is not a power of $p$.
+
+\begin{remark}\label{rem:no-caseA}
+One might hope to show $p \nmid S(n)$ when $p \nmid n(n+2)$, but this
+is false in general: for instance, $v_3(S(2)) = 4$ even though
+$3 \nmid 2 \cdot 4$.  The correct statement is that $v_p(S(n))$ is
+\emph{even} for all primes $p$ with $m$ not a $p$-power, which is
+proved below using the cancellation-free $b_k$ witness.
+\end{remark}
+
+\begin{lemma}\label{lem:bk}
+For $1 \le k \le N$,
+\begin{equation}\label{eq:bk}
+b_k \defeq [f_k f_{N+1-k}]\,B_n = 2(-1)^k\,(N!)^2\,
+\frac{(N+1-k)(N+1-2k)}{\binom{N}{k}}.
+\end{equation}
+This identity can be verified for specific values of~$n$ using the
+companion notebook.
+\end{lemma}
+
+\begin{proof}
+The monomial $f_k f_{N+1-k}$ arises from four summands in~\eqref{eq:Bn}.
+All four share the same squared factorial $\alpha_k^2$ (using
+$\beta_{k-1} = \alpha_k$, $\alpha_{N+1-k} = \alpha_k$,
+$\beta_{N-k} = \alpha_k$).  Since $N = 2n$ is even:
+$(-1)^{N+1-k} = -(-1)^k$ and $(-1)^{N-k} = (-1)^k$.
+Also $\binom{N}{N+1-k} = \binom{N}{k-1}$.
+The four terms sum to
+\[
+b_k = 2(-1)^k \alpha_k^2\bigl[\binom{N}{k}-\binom{N}{k-1}\bigr]
+    = 2(-1)^k \alpha_k^2 \binom{N}{k} \cdot \frac{N+1-2k}{N+1-k}.
+\]
+Simplifying $\alpha_k^2 \binom{N}{k}/(N+1-k) = (N+1-k)(N-k)!\,k!\,N!
+= (N+1-k)(N!)^2/\binom{N}{k}$ gives~\eqref{eq:bk}.
+\end{proof}
+
+\begin{proposition}\label{prop:nonpp}
+If $p \ge 5$ is an odd prime and $m = n+2$ is not a power of~$p$, then
+$v_p(S(n))$ is even.
+\end{proposition}
+
+\begin{proof}
+We give a uniform argument that works regardless of whether $p \mid n$,
+$p \mid m$, or neither.
+Recall from~\eqref{eq:bk} the cancellation-free coefficient
+$b_k = 2(-1)^k(N!)^2(N+1-k)(N+1-2k)/\binom{N}{k}$.
+Since $N = 2n$ is even, $N+1$ is odd, so $N+1-2k \ne 0$ for every
+integer~$k$; likewise $N+1-k \ne 0$ for $k \le N$.  Hence $b_k \ne 0$
+for all $1 \le k \le N$.
+
+Define $e_p = \min_{1 \le k \le N} v_p(b_k)$.  Every scalar coefficient
+of $A_n$, $B_n$, $C_n$ has $p$-adic valuation at least $e_p$
+(the $b_k$ are scalar coefficients of $B_n$, and
+a comparison of the $\alpha\beta$-scalars in $A_n,C_n$ and the
+$\alpha^2/\beta^2$-scalars in $B_n$ shows they are all at least as large),
+so $\Delta_n = p^{2e_p}\Delta_n^{\#}$.
+
+We exhibit a coefficient of $\Delta_n$ with $p$-adic valuation exactly
+$2e_p$.  It suffices to find $k_0 \in \{1,\dots,N\} \setminus \{n,n+1\}$
+with $v_p(b_{k_0}) = e_p$, because then the square monomial
+$(f_{k_0}f_{N+1-k_0})^2$ appears in $\Delta_n$ with coefficient
+$b_{k_0}^2$ and valuation $2e_p$ (see below for why $A_nC_n$ does not
+contribute).
+
+\emph{Existence of $k_0$ for $p \ge 5$.}
+Using~\eqref{eq:vpbk} and the identity
+$\binom{N}{n-1} = \binom{N}{n}\cdot n/(n+1)$, one computes
+\begin{equation}\label{eq:bk-shift}
+v_p(b_{n+j}) - v_p(b_n) = v_p\!\left(\textstyle\prod_{i=1}^{j}(n-i+1)\right)
+ - v_p\!\left(\textstyle\prod_{i=1}^{j}(n+i+1)\right) + v_p(N+1-(n+j))
+ + v_p(N+1-2(n+j)) - v_p(n+1)
+\end{equation}
+for $j \ge 1$ (and similarly for negative shifts).  For $j = -1$
+(i.e., $k = n-1$), the formula simplifies to:
+\[
+v_p(b_{n-1}) - v_p(b_n) = v_p(m) - v_p(n) + v_p(3).
+\]
+For $p \ge 5$: $v_p(3) = 0$, and since $p$ is odd and $m = n+2$,
+at most one of $n$ and $m$ is divisible by~$p$.
+
+\emph{Case $p \nmid m$:} $v_p(m) = 0$, so $v_p(b_{n-1}) - v_p(b_n)
+= -v_p(n) \le 0$.  Thus $v_p(b_{n-1}) \le v_p(b_n)$.
+If the minimum $e_p$ is attained at $k=n$ or $k=n+1$, then this
+inequality shows it is also attained at the off-center index $k=n-1$.
+Otherwise the minimum is already attained at some off-center index.
+In either case there exists $k_0 \notin \{n,n+1\}$ with
+$v_p(b_{k_0}) = e_p$.
+
+\emph{Case $p \mid m$:}
+Write $a = v_p(m) \ge 1$ and $m = p^a r$ with $p \nmid r$ and $r \ge 2$
+(since $m$ is not a $p$-power).
+Set $k_0 = n - p^a$.  Since $p^a \le m/2 = (n+2)/2 < n$ (using
+$r \ge 2$), we have $1 \le k_0 < n$, so $k_0 \in \{1,\dots,N\}
+\setminus \{n,n+1\}$.
+
+We claim $v_p(b_{k_0}) \le v_p(b_n)$.  From the closed
+form~\eqref{eq:bk}, the ratio is
+\[
+\frac{b_{k_0}}{b_n}
+= \frac{(n+1+p^a)(2p^a+1)}{(n+1) \cdot 1}
+  \cdot \frac{\binom{N}{n}}{\binom{N}{n-p^a}}.
+\]
+Since $n+1 = p^ar - 1 \equiv -1$ and
+$n+1+p^a = p^a(r+1)-1 \equiv -1 \pmod{p}$, and
+$2p^a + 1 \equiv 1 \pmod{p}$, the linear factors contribute
+$v_p = 0$.  For the binomial ratio, write
+\[
+\frac{\binom{N}{n}}{\binom{N}{n-p^a}}
+= \prod_{j=0}^{p^a-1} \frac{n+j+1}{n-j}.
+\]
+Both the numerator set $\{n+1,\dots,n+p^a\}$ and the denominator
+set $\{n-p^a+1,\dots,n\}$ form complete residue systems
+modulo~$p^a$.  The unique multiple of~$p^a$ in the numerator is
+$p^a r$, with $v_p = a + v_p(r) = a$.  The unique multiple of~$p^a$
+in the denominator is $p^a(r-1)$, with $v_p = a + v_p(r-1)$.  All
+other terms in both sets are non-multiples of~$p^a$ and contribute
+equal $p$-adic valuation (since they share the same residues
+modulo~$p^a$).  Hence
+\[
+v_p\!\left(\frac{\binom{N}{n}}{\binom{N}{n-p^a}}\right)
+= v_p(r) - v_p(r-1) = -v_p(r-1) \le 0,
+\]
+giving $v_p(b_{k_0}) \le v_p(b_n)$.
+Thus $e_p$ is achieved at the off-center index~$k_0$.
+
+Now consider the square monomial $(f_{k_0}f_{N+1-k_0})^2$ in
+$\Delta_n = B_n^2 - 4A_nC_n$.
+Since $k_0 \ne n$ and $k_0 \ne n+1$, we have $k_0 \ne N-k_0$
+and $k_0 \ne N+1-k_0$ (as $N = 2n$), so the quartic monomial
+$f_{k_0}^2 f_{N+1-k_0}^2$ cannot arise from $A_nC_n$: every term
+of $A_nC_n$ is a product $f_if_{N-i}f_{j+1}f_{N+1-j}$ with $i \ne N-i$
+(for $i \ne n$) and $j+1 \ne N+1-j$ (for $j \ne n$), so matching
+$f_{k_0}^2$ requires $i = N-i = k_0$, i.e., $k_0 = n$.  Hence
+\[
+[(f_{k_0}f_{N+1-k_0})^2]\,\Delta_n = b_{k_0}^2,
+\qquad
+v_p(b_{k_0}^2) = 2e_p.
+\]
+Since every coefficient of $\Delta_n$ has $v_p \ge 2e_p$, and this
+particular coefficient has $v_p = 2e_p$, we conclude $v_p(S(n)) = 2e_p$,
+which is even.
+\end{proof}
+
+\subsection{The prime-power case}\label{subsec:pp}
+
+Let $m=p^k$, $n=p^k-2$, $N=2p^k-4$.  Define
+$e_p = \min\{v_p(c) : c \text{ a scalar coefficient of } Q_n\}$.
+Then $Q_n = p^{e_p}Q_n^{\#}$ and $\Delta_n = p^{2e_p}\Delta_n^{\#}$.
+
+\begin{lemma}\label{lem:central}
+The $p$-adic content $e_p$ is attained by exactly the following
+summands of~$Q_n$:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item the $A_n/C_n$ summand at $i = n$, with scalar $\binom{N}{n}\alpha_n\beta_n$;
+\item the $\beta^2$-part of the $B_n$ summand at $i = n-1$, with scalar
+$\binom{N}{n-1}\beta_{n-1}^2$;
+\item both parts of the $B_n$ summand at $i = n$;
+\item the $\alpha^2$-part of the $B_n$ summand at $i = n+1$, with scalar
+$\binom{N}{n+1}\alpha_{n+1}^2$.
+\end{enumerate}
+Every other scalar coefficient of $A_n$, $B_n$, or $C_n$ has
+$p$-adic valuation at least $e_p + 1$.
+\end{lemma}
+
+\begin{proof}
+Since $\alpha_n = \beta_n = (n+1)!\,n! =: \gamma$, the summand at $i = n$ has
+valuation $v_p(\binom{N}{n}\gamma^2)$ in all three families.  We check that
+this is the global minimum.
+
+For the $\alpha\beta$-family (governing $A_n$ and $C_n$): the scalar is
+$\binom{N}{i}\alpha_i\beta_i = N!\,(N+1-i)!\,(i+1)!$.  At $i = n$, both
+auxiliary factorials equal $(n+1)!$.  For $|i-n| \ge 1$, one of
+$N+1-i$ or $i+1$ exceeds $n+1 = p^k-1$, so either $(N+1-i)!$ or
+$(i+1)!$ contains a factor of $m = p^k$, increasing the valuation.
+(Precisely: if $i \le n-1$ then $N+1-i \ge n+2 = m$, and if
+$i \ge n+1$ then $i+1 \ge n+2 = m$.)  Thus the $\alpha\beta$-minimum
+is attained only at $i = n$.
+
+For the $\alpha^2$-family (one part of $B_n$): the scalar is
+$\binom{N}{i}\alpha_i^2 = N!\,(N+1-i)^2(N-i)!\,i!$.  At $i = n$
+and $i = n+1$, one verifies $v_p = e_p$; for $|i-n| \ge 2$ or $i \le n-1$
+the extra factor of $m$ in $(N+1-i)!$ or $i!$ forces $v_p \ge e_p + 1$.
+
+For the $\beta^2$-family: the scalar is
+$\binom{N}{i}\beta_i^2 = N!\,(i+1)^2(N-i)!\,i!$.  By the same analysis
+with $i$ and $N-i$ exchanged, the minimum is attained at $i = n$ and $i = n-1$.
+
+Combining: the global minimum $e_p$ is achieved precisely at the four
+summand types listed in the statement, and all others have valuation at
+least $e_p + 1$.
+\end{proof}
+
+\begin{lemma}\label{lem:rank1}
+$Q_n^{\#} \equiv \lambda\,(f_n x - f_{n+1}z)^2 \pmod{p}$ with
+$p \nmid \lambda$.  More precisely, $Q_n^{\#}$ has rank~$1$
+modulo~$p$, so its discriminant vanishes:
+$p \mid \cont(\Delta_n^{\#})$.
+\end{lemma}
+
+\begin{remark}
+The fact that $Q_n^\sharp$ has rank~$1$ modulo~$p$ can be understood
+representation-theoretically: after reducing modulo~$p$, only the central
+block of the transvectant sum (indices $i \in \{n-1, n, n+1\}$)
+survives by Lemma~\ref{lem:central}, and this block is forced to be a
+perfect square by the equality $\alpha_n = \beta_n$ that holds at the
+central index.  See~\cite{FultonHarris1991} for background on the
+representation theory of~$\SL_2$.
+\end{remark}
+
+\begin{proof}
+By Lemma~\ref{lem:central}, only $i \in \{n-1,n,n+1\}$ contribute
+modulo~$p$.  Set $\gamma = (n+1)!n!$.
+
+At $i = n$: $\alpha_n = \beta_n = \gamma$, so the summand contributes
+$(-1)^n\binom{N}{n}\gamma^2(f_nx+f_{n+1}z)^2$.
+
+At $i = n \pm 1$: since $\alpha_{n-1} = (n+2)!(n-1)!$ has extra factor
+$p^k$ from $(n+2)!$, while $\beta_{n-1} = \gamma$, the $\alpha$-terms
+vanish modulo $p \cdot p^{e_p}$.  So $D_{n-1} \equiv \gamma f_n z$ and
+$E_{n-1} \equiv \gamma f_{n+1} x$; similarly $D_{n+1} \equiv \gamma f_{n+1} x$
+and $E_{n+1} \equiv \gamma f_n z$.  These contribute only to the
+$xz$~coefficient.
+
+Setting $\lambda_A = (-1)^n\binom{N}{n}\gamma^2/p^{e_p}$ (with
+$p \nmid \lambda_A$), we obtain
+$A_n^{\#} \equiv \lambda_A f_n^2$, \;
+$C_n^{\#} \equiv \lambda_A f_{n+1}^2$, \; and
+$B_n^{\#} \equiv \frac{2\lambda_A}{n+1} f_n f_{n+1} \equiv -2\lambda_A f_n f_{n+1}\pmod{p}$,
+where the last step uses $n+1 = p^k-1 \equiv -1\pmod{p}$.
+Thus $Q_n^{\#} \equiv \lambda_A(f_nx - f_{n+1}z)^2\pmod{p}$.
+
+The discriminant satisfies
+\[
+(B_n^{\#})^2 - 4A_n^{\#}C_n^{\#}
+\equiv 4\lambda_A^2 f_n^2f_{n+1}^2 - 4\lambda_A^2 f_n^2f_{n+1}^2
+= 0 \pmod{p}.
+\]
+Hence $Q_n^{\#}$ has rank~$1$ modulo~$p$.
+\end{proof}
+
+\begin{corollary}\label{cor:rank1disc}
+$p \mid \cont(\Delta_n^{\#})$.  In particular, $v_p(S(n)) \ge 2e_p + 1$.
+\end{corollary}
+
+\subsubsection*{First-order deformation}
+
+Set $t = p^{k-1}$.  For $k \ge 2$, consider the specialization
+\begin{equation}\label{eq:spec}
+f_n = 1, \quad f_{n+1} = -1, \quad f_{n-t} = s, \quad f_{n+t+1} = 1,
+\quad \text{others } 0.
+\end{equation}
+For $k = 1$ ($t = 1$, $m = p$, $n = p-2$):
+\begin{equation}\label{eq:speck1}
+f_{n-1} = s, \quad f_n = 1, \quad f_{n+1} = -1, \quad f_{n+2} = 1,
+\quad \text{others } 0.
+\end{equation}
+
+\begin{lemma}\label{lem:offcentre}
+For $k \ge 2$,
+$v_p(\binom{N}{n-t}\alpha_{n-t}^2) = e_p + 1$.
+\end{lemma}
+
+\begin{proof}
+The $B_n$ coefficient $b_{n-t}$ has
+$v_p(n+t+1) = v_p(p^k+p^{k-1}-1) = 0$ and
+$v_p(2t+1) = v_p(2p^{k-1}+1) = 0$ (for $k \ge 2$).
+
+A carry analysis via Kummer's theorem shows that
+$v_p\binom{N}{n-t} = v_p\binom{N}{n} - 1$: the carry chain breaks at
+position $k-1$ when adding $(n-t)+(n+t) = N$, losing one carry compared
+to $n+n = N$.  Hence $v_p(b_{n-t}) = 2v_p(N!) - (c_p - 1) = e_p + 1$.
+\end{proof}
+
+\begin{lemma}\label{lem:deform}
+For $k \ge 2$, or for $k = 1$ with $p \ge 5$: under the specialization,
+$B^{\#} \equiv 2u + p\mu s \pmod{p^2}$ and
+$A^{\#} \equiv C^{\#} \equiv u \pmod{p}$, where $p \nmid u\mu$.
+\end{lemma}
+
+\begin{proof}
+\textbf{Case $k \ge 2$.}
+At $s=0$: with $f_n = 1$ and $f_{n+1} = -1$,
+Lemma~\ref{lem:rank1} gives $Q_n^{\#} \equiv \lambda(x+z)^2$ (mod~$p$),
+so $u=\lambda$ and $B^\# \equiv 2u \pmod{p}$.
+The parameter $s = f_{n-t}$ enters through indices $i \in \{n-t, n+t, n+t+1\}$.
+All three contribute only to $B_n$ (the $xz$ coefficient), at valuation
+$e_p + 1$.  By Lemma~\ref{lem:offcentre}, the sum divided by $p^{e_p+1}$
+is a $p$-adic unit~$\mu$.
+
+\textbf{Case $k = 1$, $p \ge 5$.}
+Here $t = 1$, and $b_{n-1}$ has $v_p(N+1-2(n-1)) = v_p(3) = 0$, so
+$v_p(b_{n-1}) = e_p + 1$ and $\mu \ne 0$ mod~$p$.
+
+\textbf{Case $k = 1$, $p = 3$.}
+This case is excluded from the present lemma and handled separately
+below as a base case for Proposition~\ref{prop:pp}.
+\end{proof}
+
+\begin{remark}[Base case $m = 3$]\label{rem:base-case-3}
+When $p = 3$ and $k = 1$, we have $n = 1$ and $Q_1 = -2H(F)$, where
+$H(F)$ is the classical Hessian of a binary cubic.  The
+identity~\eqref{eq:dischess} gives $\Delta_1 = 4\disc(H(F)) = -12\disc(F)$.
+Since $\disc(F)$ is a primitive polynomial in the $f_j$ (its content is~$1$),
+and $v_3(12) = 1$, it follows that $S(1) = \cont(\Delta_1) = 12 \cdot
+\cont(\disc(F)) \cdot (\text{power of }2)$.
+Direct computation gives $S(1) = 192 = 2^6 \cdot 3$, so
+$v_3(S(1)) = 1$, which is odd.  This confirms
+Proposition~\ref{prop:pp} in this case.
+\end{remark}
+
+\begin{proposition}\label{prop:pp}
+When $m = p^k$ ($p$ odd, $k \ge 1$),
+$v_p(\cont(\Delta_n^{\#})) = 1$.
+\end{proposition}
+
+\begin{proof}
+For $k \ge 2$, or $k = 1$ with $p \ge 5$:
+from Lemma~\ref{lem:deform},
+\begin{align*}
+(B^{\#})^2 - 4A^{\#}C^{\#}
+&\equiv (2u+p\mu s)^2 - 4u^2
+= 4u^2 + 4up\mu s + p^2\mu^2 s^2 - 4u^2 \\
+&\equiv 4up\mu s \pmod{p^2}.
+\end{align*}
+At $s=1$: $v_p = 1$ (since $p \nmid u\mu$).
+Combined with Corollary~\ref{cor:rank1disc}:
+$v_p(\cont(\Delta_n^{\#})) = 1$.
+
+For $p = 3$, $k = 1$: by Remark~\ref{rem:base-case-3},
+$v_3(S(1)) = 1$, so $v_3(\cont(\Delta_1^{\#})) = 1$ as well.
+\end{proof}
+
+\subsection{Synthesis: proof of Theorem~\ref{thm:main}}\label{subsec:synthesis}
+
+We now combine the results of the preceding subsections to establish
+the main theorem.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+\textbf{Part~(i):} $v_2(S(n))$ is always even, by Proposition~\ref{prop:p2}.
+
+\textbf{Part~(ii):}
+Fix an odd prime~$p$.
+
+\emph{If $m = p^k$:} By Proposition~\ref{prop:pp},
+$v_p(S(n)) = 2e_p + 1 \equiv 1 \pmod{2}$, so $p \mid \sqf(S(n))$.
+Since $m$ can be a power of at most one odd prime,
+the odd part of $\sqf(S(n))$ is~$p$.
+
+\emph{If $m$ is not a power of~$p$:} By Proposition~\ref{prop:nonpp}
+(for $p \ge 5$, and by Proposition~\ref{prop:p3-nonpp} for $p = 3$),
+$v_p(S(n)) \equiv 0 \pmod{2}$, so $p \nmid \sqf(S(n))$.
+
+Combining parts~(i) and~(ii): $\sqf(S(n)) = a(n+2)$.
+\end{proof}
+
+\begin{remark}
+The proof of part~(ii) for $p=3$ in the non-prime-power case uses
+a different witness construction from the $p \ge 5$ case, based on
+ternary digit recursions.  This is developed in
+Section~\ref{sec:p3-draft} below.
+\end{remark}
+
+\subsection{The prime $p=2$}\label{subsec:p2}
+
+We show that $v_2(S(n))$ is always even, so the prime~$2$ never
+contributes to the squarefree part of~$S(n)$.
+
+\begin{proposition}\label{prop:p2}
+For every $n \ge 1$, $v_2(S(n))$ is even.
+\end{proposition}
+
+\begin{proof}
+\emph{Case $m$ not a power of~$2$.}
+The cancellation-free argument of Proposition~\ref{prop:nonpp} applies
+verbatim: the valuation shift formula
+$v_2(b_{n-1})-v_2(b_n) = v_2(m)-v_2(n)+v_2(3) = v_2(m)-v_2(n)$
+(since $v_2(3)=0$) gives an off-centre witness exactly as
+in~\S\ref{subsec:nonpp} (for the case $2\nmid m$) or the
+complete-residue-system argument (for $2\mid m$, $m$ not a $2$-power).
+Hence $v_2(S(n))=2e_2$ is even.
+
+\emph{Case $m=2^k$ ($k\ge 2$; note $k=1$ gives $n=0$).}
+The rank-$1$ collapse (Lemma~\ref{lem:rank1}) shows
+$Q_n^{\#} \equiv \lambda(f_n x - f_{n+1}z)^2 \pmod{2}$.
+In particular $B^{\#} \equiv -2\lambda f_n f_{n+1} \equiv 0 \pmod{2}$,
+so $2 \mid B^{\#}$.  Then
+\[
+(B^{\#})^2 - 4A^{\#}C^{\#} \equiv 0 \pmod{4},
+\]
+since both $(B^{\#})^2$ and $4A^{\#}C^{\#}$ are divisible by~$4$.
+Hence $v_2(\cont(\Delta_n^{\#})) \ge 2$, giving
+$v_2(S(n)) \ge 2e_2 + 2$.
+
+For the upper bound, the same deformation specialization as
+in~\S\ref{subsec:pp} (at distance $t=2^{k-1}$) gives
+$B^{\#} \equiv 2u + 2\mu \pmod{4}$ with $2 \nmid u,\mu$.
+Expanding:
+\[
+(B^{\#})^2 - 4A^{\#}C^{\#}
+\equiv (2u+2\mu)^2 - 4u^2
+= 4\mu(2u+\mu) \pmod{4\cdot 2}.
+\]
+Since $\mu$ is odd and $2u+\mu$ is odd (even plus odd),
+$v_2(4\mu(2u+\mu))=2$.  Combined with the lower bound:
+$v_2(\cont(\Delta_n^{\#})) = 2$, so $v_2(S(n)) = 2e_2+2$, which is even.
+\end{proof}
+
+%======================================================================
+% SECTION 6: DRAFT EXTENSION FOR p = 3
+%======================================================================
+\section{The remaining $p=3$ non-prime-power case}
+\label{sec:p3-draft}
+
+This section handles the $p=3$ non-prime-power case, namely
+\[
+3 \mid m=n+2,\qquad m \text{ not a power of } 3.
+\]
+Combining this section with the arguments of \S\ref{sec:padic} recovers
+the full odd-prime squarefree-kernel formula.
+
+\subsection{The witness family}
+
+For $1 \le k \le n-1$, let $\phi_k$ denote the symmetric two-point
+specialization
+\begin{equation}\label{eq:phi-k}
+f_k = 1,\qquad f_{N+1-k}=1,\qquad f_j = 0 \text{ for } j \notin \{k,N+1-k\}.
+\end{equation}
+
+The natural coefficient attached to this specialization is the diagonal
+$B_n$-coefficient
+\[
+b_k = [f_k f_{N+1-k}]\,B_n,
+\]
+whose closed formula was proved in Lemma~\ref{lem:bk}.
+
+\begin{proposition}\label{prop:p3-pair-reduction}
+Let $1 \le k \le n-1$.  Under the specialization~\eqref{eq:phi-k},
+one has
+\[
+A_n(\phi_k)=0,\qquad C_n(\phi_k)=0,\qquad B_n(\phi_k)=b_k,
+\]
+and hence
+\[
+\Delta_n(\phi_k)=b_k^2.
+\]
+Consequently, if for some such $k$ one has $v_3(b_k)=e_3$, where
+\[
+e_3 \defeq \min_{1 \le j \le N} v_3(b_j),
+\]
+then
+\[
+v_3(\Delta_n(\phi_k)) = 2e_3
+\qquad\text{and hence}\qquad
+v_3(S(n)) \text{ is even.}
+\]
+\end{proposition}
+
+\begin{proof}
+Under~\eqref{eq:phi-k}, every nonzero monomial in~$A_n$ has the form
+$f_i f_{N-i}$, while every nonzero monomial in~$C_n$ has the form
+$f_{i+1}f_{N+1-i}$.  Since the support of~$\phi_k$ is
+$\{k,N+1-k\}$ and $k \ne n,n+1$, neither pattern can hit the same support
+index twice, so both $A_n$ and $C_n$ vanish.
+
+For $B_n$, the only surviving monomial is $f_k f_{N+1-k}$, whose
+coefficient is by definition~$b_k$.  Thus
+\[
+\Delta_n(\phi_k)=B_n(\phi_k)^2-4A_n(\phi_k)C_n(\phi_k)=b_k^2.
+\]
+If $v_3(b_k)=e_3$, then this specialization exhibits a value of
+$\Delta_n$ with $3$-adic valuation exactly~$2e_3$.  Since every coefficient
+of $\Delta_n$ has valuation at least~$2e_3$ (because, exactly as in the
+proof of Proposition~\ref{prop:nonpp}, every scalar coefficient of
+$A_n$, $B_n$, and $C_n$ has valuation at least~$e_3$), it follows that
+$v_3(S(n))=2e_3$ is even.
+\end{proof}
+
+\subsection{Reduction to a binomial maximization problem}
+
+By Lemma~\ref{lem:bk},
+\[
+b_k = 2(-1)^k (N!)^2\,
+\frac{(N+1-k)(N+1-2k)}{\binom{N}{k}}.
+\]
+Now assume $3 \mid m = n+2$, so $N = 2n \equiv 2 \pmod{3}$ and
+$N+1 \equiv 0 \pmod{3}$.  If $3 \nmid k$, then
+$N+1-k \not\equiv 0 \pmod{3}$ and $N+1-2k \not\equiv 0 \pmod{3}$, so
+both linear factors are $3$-adic units.  Hence for such~$k$,
+\begin{equation}\label{eq:v3bk-binomial}
+v_3(b_k)= 2v_3(N!) - v_3\binom{N}{k}.
+\end{equation}
+Thus minimizing $v_3(b_k)$ among indices $k$ with $3 \nmid k$ is equivalent
+to maximizing $v_3\binom{N}{k}$ among those same indices.
+
+Thus the remaining $p=3$ problem is fundamentally combinatorial: find an
+off-center lower-half index $k$ with $3 \nmid k$ for which
+$v_3\binom{N}{k}$ is maximal.
+
+\subsection{Ternary recursions}
+
+Write
+\[
+F_N(k) \defeq v_3\binom{N}{k}.
+\]
+\begin{lemma}\label{lem:p3-digit-sum}
+For integers $N \ge 0$ and $0 \le k \le N$,
+\[
+F_N(k)=\frac{s_3(k)+s_3(N-k)-s_3(N)}{2},
+\]
+where $s_3(t)$ denotes the sum of the base-$3$ digits of~$t$.
+\end{lemma}
+
+\begin{proof}
+This is the $p=3$ specialization of the classical Legendre--Kummer
+digit-sum formula for binomial coefficients.
+\end{proof}
+
+Define also
+\[
+G_A(a) \defeq F_A(a)+v_3(A-a).
+\]
+
+\begin{lemma}\label{lem:p3-F-recursions}
+For integers $A \ge 0$ and valid values of~$a$, the following hold.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item If $0 \le a \le A$ and $r \in \{0,1,2\}$, then
+\begin{equation}\label{eq:F-3Aplus2}
+F_{3A+2}(3a+r)=F_A(a).
+\end{equation}
+\item If $0 \le a \le A-1$, then
+\begin{align}
+F_{3A}(3a) &= F_A(a),\label{eq:F-3A-zero}\\
+F_{3A}(3a+1) &= G_A(a)+1,\label{eq:F-3A-one}\\
+F_{3A}(3a+2) &= G_A(a)+1.\label{eq:F-3A-two}
+\end{align}
+\item If $0 \le a \le A-1$, then
+\begin{align}
+F_{3A+1}(3a) &= F_A(a),\label{eq:F-3Aplus1-zero}\\
+F_{3A+1}(3a+1) &= F_A(a),\label{eq:F-3Aplus1-one}\\
+F_{3A+1}(3a+2) &= G_A(a)+1.\label{eq:F-3Aplus1-two}
+\end{align}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Part~(i) follows immediately from Lemma~\ref{lem:p3-digit-sum}: if
+$N=3A+2$ and $k=3a+r$, then
+\[
+s_3(3a+r)=s_3(a)+r,\qquad
+s_3(3A+2-(3a+r))=s_3(A-a)+(2-r),
+\]
+and $s_3(3A+2)=s_3(A)+2$.
+
+For part~(ii), let $B=A-a>0$.  The identity
+\[
+s_3(B-1)=s_3(B)-1+2v_3(B)
+\]
+gives
+\[
+s_3(3A-(3a+1))=s_3(3(B-1)+2)=s_3(B)+1+2v_3(B),
+\]
+and similarly
+\[
+s_3(3A-(3a+2))=s_3(3(B-1)+1)=s_3(B)+2v_3(B).
+\]
+Substituting into Lemma~\ref{lem:p3-digit-sum} yields
+\eqref{eq:F-3A-zero}--\eqref{eq:F-3A-two}.
+
+Part~(iii) is similar.  Again setting $B=A-a>0$, one has
+\[
+3A+1-(3a+2)=3(B-1)+2,
+\]
+so
+\[
+s_3(3A+1-(3a+2))=s_3(B)+1+2v_3(B).
+\]
+Together with $s_3(3a+2)=s_3(a)+2$ and $s_3(3A+1)=s_3(A)+1$, this gives
+\eqref{eq:F-3Aplus1-two}; the identities
+\eqref{eq:F-3Aplus1-zero} and \eqref{eq:F-3Aplus1-one} are immediate.
+\end{proof}
+
+\begin{corollary}\label{cor:p3-G-recursions}
+For integers $A \ge 1$ and valid values of~$a$, one has:
+\begin{align}
+G_{3A}(3a) = G_{3A}(3a+1) = G_{3A}(3a+2) &= G_A(a)+1,\label{eq:G-3A}\\
+G_{3A+1}(3a+1) = G_{3A+1}(3a+2) &= G_A(a)+1,\label{eq:G-3Aplus1}\\
+G_{3A+2}(3a+2) &= G_A(a)+1.\label{eq:G-3Aplus2}
+\end{align}
+Moreover,
+\[
+G_{3A+1}(3a)=F_A(a),\qquad
+G_{3A+2}(3a)=G_{3A+2}(3a+1)=F_A(a).
+\]
+\end{corollary}
+
+\begin{proof}
+This is immediate from Lemma~\ref{lem:p3-F-recursions} and the definition
+$G_N(k)=F_N(k)+v_3(N-k)$.
+\end{proof}
+
+\subsection{Maximizers of the ternary score}
+
+\begin{lemma}\label{lem:G-lower-half}
+For every integer $A \ge 1$, the function $G_A(a)$
+($0 \le a \le A-1$) attains its maximum at some index satisfying
+\[
+a < \frac{A}{2}.
+\]
+\end{lemma}
+
+\begin{proof}
+We argue by induction on~$A$.
+
+If $A=1$, then $a=0$ is the only admissible index.
+
+Assume the claim for all smaller positive integers.
+If $A=3B$, then by~\eqref{eq:G-3A} every maximum of $G_A$
+comes from a maximum of~$G_B$ lifted to one of the three indices
+$3b,3b+1,3b+2$.  By induction choose $b < B/2$; then
+$3b < 3B/2 = A/2$.
+
+If $A=3B+1$, then by Corollary~\ref{cor:p3-G-recursions},
+the values at indices $3b+1$ and $3b+2$ are
+$G_B(b)+1$, whereas the value at $3b$ is only~$F_B(b)$.
+Thus a maximum of $G_A$ is attained at some $3b+1$ with
+$b$ maximizing~$G_B$.  By induction $b < B/2$, hence
+$3b+1 < (3B+1)/2 = A/2$.
+
+If $A=3B+2$, then similarly the maximal values are attained at indices
+$3b+2$ with $b$ maximizing~$G_B$.  By induction $b < B/2$, and therefore
+$3b+2 < (3B+2)/2 = A/2$.
+\end{proof}
+
+\begin{lemma}\label{lem:G-odd-sharp}
+Let $B \ge 1$ be odd.  Then:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item if $B \ne 2\cdot 3^t - 1$ for every $t \ge 0$, then $G_B(a)$ attains
+its maximum at some index satisfying
+\[
+a < \frac{B-1}{2};
+\]
+\item if $B = 2\cdot 3^t - 1$ for some $t \ge 0$, then
+$G_B(a)$ has a unique maximizer, namely
+\[
+a = \frac{B-1}{2}.
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+We argue by induction on odd~$B$.
+
+For $B=1$, the only admissible index is $a=0=(B-1)/2$, so the statement
+holds.
+
+Suppose $B>1$ is odd.
+
+\smallskip
+\emph{Case $B=3A+1$.}  Then $A$ is even.  By
+Corollary~\ref{cor:p3-G-recursions}, the maximal values of~$G_B$ occur at
+indices of the form $3a+1$ or $3a+2$, where $a$ maximizes~$G_A$.
+By Lemma~\ref{lem:G-lower-half}, choose $a < A/2$.
+Then
+\[
+3a+1 < \frac{3A+1}{2} = \frac{B-1}{2}.
+\]
+So part~(i) holds in this case.  In particular, no number congruent to
+$1 \pmod{3}$ belongs to the exceptional family.
+
+\smallskip
+\emph{Case $B=3A+2$.}  Then $A$ is odd.  Again by
+Corollary~\ref{cor:p3-G-recursions}, the maximal values of~$G_B$ occur
+precisely at indices $3a+2$ with $a$ maximizing~$G_A$.
+If $A$ is not exceptional, the induction hypothesis gives a maximizer
+$a < (A-1)/2$, hence
+\[
+3a+2 < \frac{3A+1}{2} = \frac{B-1}{2},
+\]
+so part~(i) holds.
+
+If $A = 2\cdot 3^t - 1$ is exceptional, then by induction
+$a=(A-1)/2$ is the unique maximizer of~$G_A$.  Therefore
+$3a+2 = (B-1)/2$ is the unique maximizer of~$G_B$.
+Since
+\[
+B = 3(2\cdot 3^t - 1)+2 = 2\cdot 3^{t+1}-1,
+\]
+this is exactly part~(ii).
+\end{proof}
+
+\begin{lemma}\label{lem:F-even-sharp}
+Let $A \ge 2$ be even.  Then:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item if $A \ne 2\cdot 3^t - 2$ for every $t \ge 1$, then
+$F_A(a)$ attains its maximum at some index satisfying
+\[
+a < \frac{A}{2};
+\]
+\item if $A = 2\cdot 3^t - 2$ for some $t \ge 1$, then
+$F_A(a)$ has a unique maximizer, namely
+\[
+a = \frac{A}{2}.
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+We argue by induction on even~$A$.
+
+If $A=2$, then $F_2(0)=F_2(1)=F_2(2)=0$, so part~(i) holds.
+
+Assume $A>2$.
+
+\smallskip
+\emph{Case $A=3B$.}  Then $B$ is even.  By
+\eqref{eq:F-3A-one}--\eqref{eq:F-3A-two}, the maximal values of~$F_A$
+occur at indices $3b+1$ or $3b+2$, where $b$ maximizes~$G_B$.
+By Lemma~\ref{lem:G-lower-half}, choose $b < B/2$, hence
+\[
+3b+1 < \frac{3B}{2} = \frac{A}{2}.
+\]
+So part~(i) holds.
+
+\smallskip
+\emph{Case $A=3B+2$.}  Then $B$ is even.  By~\eqref{eq:F-3Aplus2},
+the maximal values of~$F_A$ are exactly the lifts of the maximal values
+of~$F_B$.
+If $B$ is not exceptional, choose $b < B/2$ by induction; then
+$3b+1 < (3B+2)/2 = A/2$, so part~(i) holds.
+If $B = 2\cdot 3^t - 2$ is exceptional, then $b=B/2$ is the unique
+maximizer of~$F_B$, but the lifted index
+\[
+3b = \frac{3B}{2} < \frac{3B+2}{2} = \frac{A}{2}
+\]
+is still a strict lower-half maximizer of~$F_A$.  Hence part~(i)
+holds in all cases.
+
+\smallskip
+\emph{Case $A=3B+1$.}  Then $B$ is odd.  By
+\eqref{eq:F-3Aplus1-zero}--\eqref{eq:F-3Aplus1-two}, the maximal values
+of~$F_A$ occur at indices $3b+2$, where $b$ maximizes~$G_B$.
+If $B$ is not exceptional, Lemma~\ref{lem:G-odd-sharp} gives
+$b < (B-1)/2$, so
+\[
+3b+2 < \frac{3B+1}{2} = \frac{A}{2},
+\]
+and part~(i) follows.
+
+If $B = 2\cdot 3^t - 1$ is exceptional, then by
+Lemma~\ref{lem:G-odd-sharp} the unique maximizer of~$G_B$ is
+$b=(B-1)/2$, and the corresponding lifted index is
+\[
+3b+2 = \frac{3B+1}{2} = \frac{A}{2}.
+\]
+Thus $a=A/2$ is the unique maximizer of~$F_A$.  Since
+$A = 3(2\cdot 3^t - 1)+1 = 2\cdot 3^{t+1}-2$, this is exactly part~(ii).
+\end{proof}
+
+\subsection{Completion of the $p=3$ non-prime-power case}
+
+\begin{proposition}\label{prop:p3-nonpp}
+If $3 \mid m=n+2$ and $m$ is not a power of~$3$, then $v_3(S(n))$ is even.
+\end{proposition}
+
+\begin{proof}
+Set $N=2n$.  Since $3 \mid n+2$, we may write
+\[
+N = 2n = 3A+2,\qquad A = \frac{N-2}{3} = \frac{2m-6}{3}=2\Bigl(\frac{m}{3}\Bigr)-2.
+\]
+Because $m$ is not a power of~$3$, the integer $A$ is not of the
+exceptional form $2\cdot 3^t - 2$.  By Lemma~\ref{lem:F-even-sharp},
+there exists $a < A/2$ maximizing~$F_A$.
+
+Set
+\[
+k = 3a+1.
+\]
+Then $1 \le k \le n-1$, $3 \nmid k$, and by~\eqref{eq:F-3Aplus2},
+\[
+F_N(k)=F_{3A+2}(3a+1)=F_A(a)
+=
+\max_{0 \le b \le A} F_A(b).
+\]
+Hence $k$ maximizes $F_N(j)=v_3\binom{N}{j}$ among all indices
+$j \not\equiv 0 \pmod{3}$, and by~\eqref{eq:v3bk-binomial} it minimizes
+$v_3(b_j)$ among those same indices.
+
+If $j \equiv 0 \pmod{3}$, then $N+1-j$ and $N+1-2j$ are both divisible
+by~$3$ (because $N+1 \equiv 0 \pmod{3}$), so the closed formula for~$b_j$
+shows
+\[
+v_3(b_j)\ge 2v_3(N!)+2-v_3\binom{N}{j}.
+\]
+Writing $j=3c$, Lemma~\ref{lem:p3-F-recursions}(i) gives
+$v_3\binom{N}{j}=F_A(c)=F_N(3c+1)$, so
+\[
+v_3(b_j)\ge v_3(b_{3c+1})+2.
+\]
+Thus the global minimum of $v_3(b_j)$ is attained at some index
+not divisible by~$3$.  Since $k$ minimizes $v_3(b_j)$ among those indices,
+we conclude that $v_3(b_k)=e_3$.
+
+Now Proposition~\ref{prop:p3-pair-reduction} applies:
+under the symmetric pair specialization~$\phi_k$ one has
+\[
+\Delta_n(\phi_k)=b_k^2
+\qquad\text{and}\qquad
+v_3(\Delta_n(\phi_k))=2e_3.
+\]
+Hence $v_3(S(n))=2e_3$ is even.
+\end{proof}
+%======================================================================
+% SECTION 8: USE OF AI TOOLS
+%======================================================================
+\section{The AI-assisted workflow}\label{sec:ai}
+We describe the workflow used to complete this project in some detail,
+as we believe it may serve as a useful model for other computation-heavy
+research problems.
+
+\subsection*{Starting point}
+
+The author's original notes (written several years before the present
+paper) contained:
+\begin{itemize}
+\item the definition of the test monomial family $M_{n,r}$ and the
+observation that its coefficient in $\Delta_n$ is divisible by
+$\binom{n+2}{r}$;
+\item the connection to Lucas' and Kummer's theorems via the binomial
+gcd $g(m)$;
+\item the proof that primes dividing $n$ contribute even $p$-adic
+valuation;
+\item the proof for the simplest prime-power case $m = p$ (i.e., $k=1$);
+\item various incomplete attempts at the remaining cases.
+\end{itemize}
+The main obstacles were: (a) the composite case when $p = 3$, where
+the natural ``end-anchored'' witness approach fails; (b) the
+prime-power case $m = p^k$ for $k \ge 2$, which requires understanding
+the $p$-adic structure of the transvectant at depth beyond the leading
+term; and (c) assembling a complete, gap-free argument from the
+many partial results.
+
+\subsection*{The workflow}
+
+The project was completed in a single extended session using Claude Code
+(Anthropic), an AI coding assistant accessed via the command line.
+The workflow had four phases:
+
+\medskip
+\emph{Phase 1: Understanding and diagnosis.}
+Claude Code read all of the author's existing notes (three \LaTeX\ files,
+totaling roughly 10 pages) and produced a detailed inventory of
+what was proved, what was claimed but not proved, and what was missing.
+This diagnosis step---which would have taken the author considerable time
+to reconstruct---was completed in minutes.
+
+\medskip
+\emph{Phase 2: Numerical experimentation.}
+Claude Code wrote and executed Python scripts that:
+\begin{itemize}
+\item computed $S(n)$ and $\sqf(S(n))$ for all $n \le 30$, confirming
+the prime-to-$3$ statement of Theorem~\ref{thm:main};
+\item verified the closed-form coefficient formula
+(Lemma~\ref{lem:Cnr}) for all $n \le 15$ and all valid~$r$;
+\item investigated the prime-power case by computing $p$-adic valuations
+of explicit specializations, discovering that the $4$-term
+specialization with parameters at distance $t = p^{k-1}$ forces odd
+$p$-adic valuation;
+\item confirmed that the cancellation-free $B_n$ coefficient approach
+works uniformly for all tested primes, and in particular settles the
+non-prime-power case for $p \ge 5$.
+\end{itemize}
+These experiments were essential for guiding the proof strategy: the
+numerical data revealed the precise mechanism (the first-order
+$p$-adic deformation) before the proof was written.
+
+\medskip
+\emph{Phase 3: Proof construction and writing.}
+Working from the author's notes and guided by the numerical experiments,
+Claude Code produced complete proofs of the missing cases, wrote the
+full paper in \LaTeX, and expanded every ``similar calculation'' and
+``one verifies'' into explicit step-by-step derivations.
+The author reviewed and corrected the output.
+
+\medskip
+\emph{Phase 4: Formal verification.}
+The complete proof was formalized in Lean~4 with Mathlib, using a
+combination of Aristotle (Harmonic) and Claude Code.  The formalization
+proceeded iteratively: Claude Code prepared Lean files containing
+theorem statements with \texttt{sorry} placeholders and detailed
+proof sketches, which were submitted to Aristotle for automated proof
+completion.  Aristotle returned either complete proofs or partial
+progress; in the latter case, Claude Code filled the remaining gaps
+by launching concurrent agents to work on individual lemmas.
+
+In total, approximately $20$ Aristotle submissions were made, of which
+roughly half returned fully proved files on the first attempt.  The
+hardest lemmas---the Kummer carry analysis for off-centre binomial
+coefficients and the explicit $B_n$ congruence computation---required
+multiple rounds.  The formal verification also uncovered a sign error
+in an earlier draft of Proposition~\ref{prop:nonpp}: the valuation
+shift formula for $v_p(b_{n+2}) - v_p(b_n)$ had the wrong sign in
+one case, which was corrected using a complete-residue-system argument.
+
+The final formalization is a single self-contained Lean~4 file of
+approximately 6000 lines, containing zero \texttt{sorry} statements
+and zero \texttt{axiom} declarations.  It compiles against Mathlib
+with no errors.
+
+\subsection*{Companion materials}
+
+The following companion materials are available:
+\begin{itemize}
+\item A Jupyter notebook that independently verifies every stated formula
+and lemma by direct symbolic computation, including the closed-form
+coefficient formula (Lemma~\ref{lem:Cnr}), the cancellation-free
+$B_n$~coefficients (Lemma~\ref{lem:bk}), and the full main theorem
+(Theorem~\ref{thm:main}) for all $n \le 30$.
+\item A single self-contained Lean~4 file (\texttt{Complete.lean},
+$\approx 6000$~lines) that formalizes Theorem~\ref{thm:main} for
+all primes $p \ge 2$ (parts~(i) and~(ii) for $p \ge 5$, plus
+part~(i) for $p = 2$), compiling against Mathlib with zero
+\texttt{sorry} statements and zero \texttt{axiom} declarations.
+\end{itemize}
+
+\subsection*{Assessment}
+
+The workflow was remarkably effective for this problem.  The proof
+involves extensive algebraic manipulation---tracking signs across
+four-term sums with factorial coefficients, simplifying products of
+factorials into binomial coefficients, performing base-$p$ carry
+analyses---precisely the kind of detail-heavy work that is tedious
+and error-prone for humans but well-suited to AI assistance.
+The numerical experimentation phase was particularly valuable:
+the data unambiguously pointed to the correct proof strategy (the
+$p$-adic deformation at distance $t = p^{k-1}$) and ruled out
+false approaches, before any proof was attempted.
+
+The workflow also has clear limitations.  Claude Code occasionally
+produced algebraic errors that required correction, and some of
+its initial proof attempts contained logical gaps.  The author's
+mathematical judgment was essential at every stage: for choosing
+which questions to ask, for evaluating whether proposed arguments
+were correct, and for understanding the broader mathematical context.
+The AI did not ``discover'' the theorem---the pattern was identified
+by extensive computation years ago---nor did it contribute any
+conceptual insight beyond what was already present in the author's
+notes.  Its contribution was primarily organizational and
+computational: systematically working through the technical details
+that had prevented the project from being completed.
+
+The author takes full responsibility for all mathematical claims in
+this paper.
+
+%======================================================================
+% ACKNOWLEDGMENTS
+%======================================================================
+\section*{Acknowledgments}
+
+\noindent The author thanks Manjul Bhargava for suggesting this problem as the very
+first question to consider at the start of the author's PhD nearly a decade ago, and for his
+invaluable advice and encouragement throughout. We are grateful to Joe
+Harris, Igor Dolgachev, Anand Patel, Melanie Wood, and Stanley Yao Xiao for
+enlightening conversations.  This research was supported by the Paul and
+Daisy Soros Fellowship and the NSF Graduate Research Fellowship.
+
+The AI-assisted workflow described in Section~\ref{sec:ai} used Claude Code
+(Anthropic) and Aristotle (Harmonic).
+
+%======================================================================
+% REFERENCES
+%======================================================================
+\bibliographystyle{amsalpha}
+\bibliography{references}
+
+\end{document}
