@@ -58,8 +58,6 @@
 
 \subjclass[2020]{13A50, 11C08 (primary), and 11B65, 14L24 (secondary)}
 
-\date{\today}
-
 \begin{document}
 
 \maketitle
@@ -81,8 +79,8 @@ the 1850s.  The proof, which involves substantial explicit coefficient
 analysis and $p$-adic deformation arguments, was developed using an
 AI-assisted research workflow\textup{:} the author's earlier partial
 attempts were completed through systematic collaboration with Claude Code
-(Anthropic), and key arithmetic lemmas were formally verified in Lean~4 using
-Aristotle (Harmonic).  We describe this workflow in detail as a case study in
+(Anthropic) and Codex (OpenAI), and key arithmetic lemmas were formally verified in Lean~4 using
+Aristotle \cite{Aristotle2025} (Harmonic).  We describe this workflow in detail as a case study in
 AI-assisted mathematical research.  We also discuss representation-theoretic,
 geometric, and arithmetic interpretations of the quadratic covariant.
 \end{abstract}
@@ -98,8 +96,8 @@ is constructed by two different methods.  In this paper we determine the
 squarefree part of the scalar factor relating the quartic invariant
 of the generic odd-degree binary form to the discriminant of its
 unique quadratic covariant.  The proof was completed using
-an AI-assisted workflow built around Claude Code (Anthropic) and
-Aristotle (Harmonic), and we describe this workflow in detail as a case
+an AI-assisted workflow built around Claude Code (Anthropic), Codex (OpenAI), and
+Aristotle \cite{Aristotle2025} (Harmonic), and we describe this workflow in detail as a case
 study in AI-assisted mathematical research.
 
 \subsection{The classical case of binary cubics}
@@ -209,7 +207,8 @@ where $\sqf$ denotes the squarefree part.
 Computationally, the sequence $\sqf(S(n))$ for $n = 1, 2, 3, \dots$ begins
 $3, 1, 5, 1, 7, 1, 3, 1, 11, 1, 13, \dots$,
 which is the sequence~\href{https://oeis.org/A155457}{A155457}
-in the OEIS.  Theorem~\ref{thm:main} identifies this sequence completely. The theorem is accompanied by a Lean~4 formalization ($\approx 6000$ lines)
+in the OEIS.  Theorem~\ref{thm:main} identifies this sequence completely.
+The theorem is accompanied by a Lean~4 formalization ($\approx 14{,}500$ lines)
 and a companion Jupyter notebook that computationally verifies every stated
 formula and lemma.  All materials are available at
 \begin{center}
@@ -248,100 +247,162 @@ squared factor times $E_m(r)$.
 
 \begin{remark}
 The reason $p=2$ is excluded from part~(ii) is structural:
-the factor of~$4$ in $\Delta_n = B_n^2 - 4A_nC_n$ ensures that even
-in the prime-power case $m = 2^k$, the $2$-adic valuation picks up
-$+2$ rather than $+1$, keeping the parity even; see
-Proposition~\ref{prop:p2}.
+the factor of~$2$ in every coefficient of~$B_n$ (from the
+symmetric pairing of $\alpha^2$ and $\beta^2$ terms) ensures that
+the cancellation-free coefficient bound
+$v_2(S(n)) = 2\,\min_k v_2(b_k)$ holds for \emph{all}~$n \ge 2$,
+regardless of whether $m = n+2$ is a power of~$2$.
+Since this minimum is always achieved at an off-centre index,
+$v_2(S(n))$ is always even; see Proposition~\ref{prop:p2}.
 \end{remark}
 
 \subsection{Outline of the proof}
 
 The proof of Theorem~\ref{thm:main} occupies
-Sections~\ref{sec:prelim}--\ref{sec:padic}, and proceeds as follows.
+\S\S\ref{sec:prelim}--\ref{sec:padic} and~\S\ref{sec:p3-draft}.
+The strategy is to determine $v_p(S(n))$ by pinching it between
+matching upper and lower bounds.
 
-\begin{enumerate}[label=(\arabic*)]
-\item In Section~\ref{sec:prelim} we fix the transvectant normalization,
-derive explicit two-term formulas for the linear forms $D_i$ and $E_i$
-appearing in the transvectant sum, and state the resulting formulas for
-$A_n$, $B_n$, $C_n$.
+\begin{itemize}
+\item \emph{Upper bound via evaluation}
+  \textup{(\S\ref{sec:disc}).}\enspace
+  The content $S(n)$ divides the value of~$\Delta_n$ at every integer
+  specialization of the~$f_j$.  In \S\ref{sec:disc} we identify a
+  family of two-point specializations (setting $f_k = f_{N+1-k} = 1$,
+  all others~$0$) under which the $A_n$ and $C_n$ terms vanish,
+  leaving $\Delta_n = b_k^2$ for an explicitly computable
+  integer~$b_k$.  Since $S(n)$ divides this perfect square,
+  $v_p(S(n)) \le 2\,v_p(b_k)$.
 
-\item In Section~\ref{sec:disc} we expand the discriminant
-$\Delta_n = B_n^2 - 4A_nC_n$ and compute, in closed form, the coefficient
-$C_{n,r}$ of a controlled family of test monomials
-$M_{n,r} = f_a f_{a+1} f_b f_{b+1}$.  We then factor $C_{n,r}$ to
-isolate a non-square factor $E_m(r)$ and prove that $\gcd_r E_m(r)$
-is a power of~$2$.
+\item \emph{Lower bound via coefficient divisibility}
+  \textup{(\S\ref{subsec:nonpp}).}\enspace
+  Since $S(n)$ is the gcd of all coefficients of~$\Delta_n$,
+  a lower bound on $v_p(S(n))$ requires showing that a fixed power
+  of~$p$ divides \emph{every} coefficient.  Writing
+  $\Delta_n = B_n^2 - 4A_nC_n$, it suffices to show that $p^e$
+  divides every coefficient of $A_n$, $B_n$, and~$C_n$, whence
+  $p^{2e}$ divides every coefficient of~$\Delta_n$.  For~$B_n$ this
+  follows from a closed-form expression for~$b_k$
+  (Lemma~\ref{lem:bk}).  For $A_n$ and~$C_n$ the argument uses the
+  absorption identity for binomial coefficients together with the
+  fact that $p$ is odd; see the proof of
+  Proposition~\ref{prop:nonpp}.
 
-\item In Section~\ref{sec:content} we show that the content $S(n)$
-divides the gcd of the $C_{n,r}$, prove the binomial gcd theorem
-$g(m) = \gcd_{1 \le r \le m-1} \binom{m}{r}$ via Kummer's and Lucas'
-theorems, and show that the odd part of the gcd is governed by~$g(m)$.
+\item \emph{Even parity in the non-prime-power case}
+  \textup{(\S\ref{subsec:nonpp}).}\enspace
+  When $m = n+2$ is not a power of~$p$, there exists an index
+  $k_0 \notin \{n,n+1\}$ at which $v_p(b_{k_0})$ achieves its
+  minimum value~$e_p$ over all~$k$.  The upper bound then gives
+  $v_p(S(n)) \le 2e_p$, and the lower bound gives
+  $v_p(S(n)) \ge 2e_p$, so $v_p(S(n)) = 2e_p$ is even.
+  The existence of such an index $k_0$ uses a valuation shift
+  argument when $p \nmid m$, and a complete residue system
+  argument when $p \mid m$.
 
-\item In Section~\ref{sec:padic} we complete the proof of the
-prime-to-$3$ theorem by analyzing the
-$p$-adic parity of~$v_p(S(n))$ for each odd prime~$p \ge 5$.  We show that
-primes dividing~$n$ contribute even valuation; for the non-prime-power
-case we use cancellation-free $B_n$ coefficients; and for the
-prime-power case we establish a rank-$1$ collapse of $Q_n^{\#}$
-modulo~$p$ followed by a first-order deformation argument.  The same
-prime-power argument also treats the case $p=3$ when $n+2$ is a power
-of~$3$.  In the same section, we show that $v_2(S(n))$ is always
-even; this follows from the fact that the discriminant formula
-$\Delta_n = B_n^2 - 4A_nC_n$ has a built-in factor of~$4$ that
-shifts the $2$-adic deformation valuation by~$+2$ instead of~$+1$.
-\end{enumerate}
+\item \emph{Odd parity in the prime-power case}
+  \textup{(\S\ref{subsec:pp}).}\enspace
+  When $m = p^k$, the minimum of $v_p(b_k)$ is achieved at the
+  central index $k = n$, so no index outside $\{n,n+1\}$ works.
+  Instead, we prove the stronger lower bound
+  $v_p(S(n)) \ge 2e_p + 1$ by showing that $p$ divides every
+  coefficient of the reduced discriminant
+  $\Delta_n^{\#} = \Delta_n / p^{2e_p}$.  This occurs because,
+  after dividing out $p^{e_p}$, the reduced quadratic form
+  $Q_n^{\#}$ becomes a perfect square modulo~$p$: the congruence
+  $n+1 \equiv -1 \pmod{p}$ forces a cancellation in the cross
+  term of~$B_n$.  For the matching upper bound, we exhibit a specialization
+  with four nonzero coefficients (at indices $n$, $n+1$,
+  $n - p^{k-1}$, and $n + p^{k-1} + 1$) for which
+  $v_p(\Delta_n) = 2e_p + 1$ exactly: the perturbation away from
+  the rank-$1$ locus introduces a linear-in-$p$ correction to the
+  discriminant, giving $v_p(\Delta_n^{\#}) = 1$.
 
-Section~\ref{sec:ai} describes the AI-assisted workflow used to complete
-this project.
+\item \emph{The prime $p = 2$}
+  \textup{(\S\ref{subsec:p2}).}\enspace
+  Every coefficient of~$B_n$ is even
+  (from the symmetric pairing of $\alpha^2$ and $\beta^2$ terms),
+  so $B_n = 2G$ and $\Delta_n = 4(G^2 - A_nC_n)$.
+  By Gauss's lemma, $\cont(G^2) = \cont(G)^2$ and
+  $\cont(A_nC_n) = \cont(A_n)^2$, so both have even $2$-adic
+  valuation.  When $\cont(G)^2 \ne \cont(A_n)^2$ (Case~A, which
+  covers all $n$ with $m$ not a power of~$2$), the ultrametric
+  property of~$v_2$ gives even valuation immediately.  The
+  strict inequality $\cont(A_n) > \cont(G)$ that forces Case~A
+  uses Lemma~\ref{lem:centre-not-max}, which shows that the
+  central binomial coefficient is never maximal.
+  When $m = 2^k$ (Case~B), a mod-$4$ analysis of
+  $G'^{\,2} - A'C'$ (after dividing out $2^d$) shows that $4$
+  divides every coefficient, using the Frobenius endomorphism
+  over~$\BF_2$ and the fact that the centre--centre contribution
+  $g^2 - a^2$ is divisible by~$4$ since $g$ and~$a$ are both odd.
+  A complete-residue-system witness at $k_0 = n + 2^{k-1}$
+  provides the matching upper bound.
+  The base case $n = 1$ is verified by direct computation.
+
+\item \emph{The prime $p = 3$ in the non-prime-power case}
+  \textup{(\S\ref{sec:p3-draft}).}\enspace
+  When $3 \mid m$ but $m$ is not a power of~$3$, the valuation
+  shift formula used for $p \ge 5$ breaks down because
+  $v_3(3) = 1$.  We handle this case by a recursion on base-$3$
+  digit sums that locates a maximizer of $v_3\binom{N}{k}$ in the
+  lower half of the index range.
+\end{itemize}
+
+\noindent
+The AI-assisted workflow is described in \S\ref{sec:ai}.
 
 \subsection{History and methodology}\label{subsec:history}
 
 This problem was suggested to the author by Manjul Bhargava as one of the
-first questions to consider at the start of the author's PhD.  The author
-worked on it for several weeks and developed the basic framework that
-appears in this paper: the identification of the test monomial family
-$M_{n,r}$ and its connection to binomial coefficients, the role of
-Lucas' and Kummer's theorems, and the even-valuation phenomenon for primes
-dividing~$n$.  However, completing the proof required substantial technical
-work---particularly the cancellation-free coefficient analysis, the rank-$1$
-collapse argument in the prime-power case, and the first-order deformation
-that forces odd $p$-adic valuation---and the project stalled.
+first questions to consider at the start of the author's PhD nearly a
+decade ago.  The author worked on it for several weeks and developed the
+basic framework that appears in this paper: the test monomial family
+$M_{n,r}$, its connection to binomial coefficients via Kummer's and
+Lucas' theorems, and the even-valuation phenomenon for primes
+dividing~$n$.  However, completing the proof required substantial
+technical work, and the project stalled.
 
-The proof was completed using an AI-assisted workflow built around Claude
-Code (Anthropic's command-line AI tool).  This workflow proceeded in
-several stages:
+The proof was completed using an AI-assisted workflow built around
+Claude Code (Anthropic) and Codex (OpenAI), with key lemmas formally verified by
+Aristotle \cite{Aristotle2025} (Harmonic).  This workflow proceeded in several stages:
+
 \begin{enumerate}[label=(\roman*)]
-\item \emph{Numerical experimentation.} Claude Code wrote Python scripts
-that computed $S(n)$ for $n \le 30$, verified all coefficient formulas,
-and tested proof strategies by evaluating explicit specializations of the
-generic form.  These experiments confirmed the theorem and identified the
-precise mechanism (the $p$-adic deformation at distance $t = p^{k-1}$)
-that forces odd valuation in the prime-power case.
+\item \emph{Numerical experimentation.}
+Claude Code wrote Python scripts that computed $S(n)$ for $n \le 30$,
+verified all coefficient formulas, and tested proof strategies by
+evaluating explicit specializations of the generic form.  These
+experiments confirmed the theorem and identified the $p$-adic
+deformation at distance $t = p^{k-1}$ as the mechanism forcing
+odd valuation in the prime-power case.
 
-\item \emph{Proof construction.}  Working from the author's earlier notes,
-Claude Code helped develop complete proofs for the missing cases,
-particularly the composite case involving $p = 3$ (where the end-anchored
-witness approach fails, but the cancellation-free $B_n$ method works
-uniformly) and the general prime-power case $m = p^k$ for $k \ge 2$.
+\item \emph{Proof construction.}
+Working from the author's notes and guided by the numerical
+experiments, Claude Code produced complete proofs of the
+missing cases---particularly the prime-power case $m = p^k$
+for $k \ge 2$, the $p = 3$ non-prime-power case, and the
+$p = 2$ even-valuation argument---and wrote the paper in
+\LaTeX.  The author reviewed and corrected the output.
 
-\item \emph{Formal verification.} Key lemmas were submitted to Aristotle
-(Harmonic's Lean~4 formalization tool), which produced machine-checked
-proofs of the binomial GCD theorem, the $E_m(r)$ gcd lemma, the
-$p^2$-divisibility result, and the cancellation-free $B_n$ coefficient
-formula.
+\item \emph{Formal verification.}
+The author and Claude Code prepared Lean~4 files containing
+theorem statements and proof sketches, which were submitted
+iteratively to Aristotle for automated proof completion.
+Approximately twenty submissions were made; roughly half returned
+complete proofs on the first attempt.  When Aristotle returned
+partial progress, Claude Code filled the remaining gaps, and when Claude Code hit a roadblock, Codex took over to finish the job.  The
+resulting formalization comprises approximately
+$14{,}500$ lines of Lean~4 across twenty-five modules, containing zero \texttt{sorry} statements and zero
+\texttt{axiom} declarations.
 
 \item \emph{Exposition.} The present paper was largely written by
 Claude Code, with the author providing the original mathematical
 notes, directing the overall narrative, and reviewing the output.
-The introduction and interpretive sections draw on the author's
-framing of the problem; the technical exposition was generated
-by Claude Code from the proof constructions in the earlier phases.
 \end{enumerate}
 
 The project is notable not for the depth of the final result---which is a
 concrete but somewhat technical computation in classical invariant
 theory---but for the fact that the workflow described above was able to
-handle it at all.  The proof involves pages of intricate algebraic
+handle it at all.  The proof involves intricate algebraic
 manipulation (tracking signs, factorial cancellations, binomial
 coefficient identities), careful $p$-adic analysis with case splits
 for different primes and prime powers, and explicit specialization
@@ -351,6 +412,9 @@ mathematical work that one might expect to be most resistant to
 AI assistance, and the success of the approach suggests that
 AI-assisted workflows may be effective for a broader class of
 research problems in number theory and algebra.
+
+The author takes full responsibility for all mathematical claims in
+this paper.
 
 %======================================================================
 % SECTION 2: PRELIMINARIES AND NORMALIZATION
@@ -444,6 +508,19 @@ D_i E_i &= (\alpha_i f_i x + \beta_i f_{i+1} z)
 \end{align*}
 Substituting into~\eqref{eq:Qnsum} and collecting the $x^2$, $xz$, $z^2$
 coefficients gives~\eqref{eq:An}--\eqref{eq:Cn}.
+\end{proof}
+
+\begin{corollary}\label{cor:b-factored}
+The coefficient of the monomial $f_jf_{M-j}$ (where $M=2n{+}1$) in~$B_n$ is
+\begin{equation}\label{eq:b-factored}
+b_j = 2\,(-1)^j\,N!\,(M{-}2j)\,(M{-}j)!\,j!.
+\end{equation}
+\end{corollary}
+\begin{proof}
+Collecting all contributions to $f_jf_{M-j}$ from~\eqref{eq:Bn}
+and simplifying the resulting factorial expression yields~\eqref{eq:b-factored}.
+This identity can be verified for specific values of $n$ and $j$ using
+the companion notebook.
 \end{proof}
 
 \begin{definition}\label{def:content}
@@ -818,12 +895,56 @@ Since $N = 2n$ is even, $N+1$ is odd, so $N+1-2k \ne 0$ for every
 integer~$k$; likewise $N+1-k \ne 0$ for $k \le N$.  Hence $b_k \ne 0$
 for all $1 \le k \le N$.
 
-Define $e_p = \min_{1 \le k \le N} v_p(b_k)$.  Every scalar coefficient
-of $A_n$, $B_n$, $C_n$ has $p$-adic valuation at least $e_p$
-(the $b_k$ are scalar coefficients of $B_n$, and
-a comparison of the $\alpha\beta$-scalars in $A_n,C_n$ and the
-$\alpha^2/\beta^2$-scalars in $B_n$ shows they are all at least as large),
-so $\Delta_n = p^{2e_p}\Delta_n^{\#}$.
+Define $e_p = \min_{1 \le k \le N} v_p(b_k)$.  We claim that every
+coefficient of the polynomials $A_n$, $B_n$, $C_n$ (viewed as
+elements of $\BZ[f_0,\dots,f_{2n+1}]$) has $p$-adic valuation at
+least~$e_p$.  For~$B_n$ this follows from the cancellation-free
+formula (Lemma~\ref{lem:bk}), since the polynomial coefficient of
+$f_k f_{N+1-k}$ in~$B_n$ is exactly~$b_k$.
+
+For~$A_n$ and~$C_n$ the argument is as follows.
+Setting $\ell = n+1$ (a local abbreviation; note $\ell \ne m = n+2$),
+the $\alpha\beta$-scalar at index~$i$ satisfies
+$\binom{N}{i}\alpha_i\beta_i = (2\ell-2)!\,(2\ell-1-i)!\,(i+1)!$, so
+\[
+v_p\!\bigl(\tbinom{N}{i}\alpha_i\beta_i\bigr)
+= v_p\!\bigl((2\ell-2)!\bigr)
+  + v_p\!\bigl((2\ell-1-i)!\,(i+1)!\bigr)
+= v_p\!\bigl((2\ell-2)!\bigr)
+  + v_p(2\ell)! - v_p\tbinom{2\ell}{i+1}.
+\]
+The $b_k$-formula gives $v_p(b_k) = v_p\bigl((2\ell-2)!\bigr) + v_p(2\ell-1)!
+- v_p\tbinom{2\ell-1}{k} + v_p\lvert 2\ell{-}1{-}2k\rvert$, so the claim
+$v_p\bigl(\tbinom{N}{i}\alpha_i\beta_i\bigr) \ge e_p$ is equivalent to
+\begin{equation}\label{eq:binom-ub}
+v_p\tbinom{2\ell}{i+1}
+\le v_p(\ell)
+  + \max_{1 \le k \le 2\ell-2}
+    \Bigl[v_p\tbinom{2\ell-1}{k} - v_p\lvert 2\ell{-}1{-}2k\rvert\Bigr].
+\end{equation}
+
+To prove~\eqref{eq:binom-ub}, write $j = i+1$ and apply the
+absorption identity $\binom{2\ell}{j} = \frac{2\ell}{2\ell-j}\binom{2\ell-1}{j}
+= \frac{2\ell}{j}\binom{2\ell-1}{j-1}$ in two ways (using $v_p(2\ell) = v_p(\ell)$
+since $p$ is odd):
+\begin{align}
+v_p\tbinom{2\ell}{j} &= v_p(\ell) + v_p\tbinom{2\ell-1}{j} - v_p(2\ell-j),
+  \label{eq:absorb1}\\
+v_p\tbinom{2\ell}{j} &= v_p(\ell) + v_p\tbinom{2\ell-1}{j-1} - v_p(j).
+  \label{eq:absorb2}
+\end{align}
+From~\eqref{eq:absorb1} with $k=j$, the bound~\eqref{eq:binom-ub}
+holds whenever $v_p\lvert 2\ell{-}1{-}2j\rvert \le v_p(2\ell-j)$.
+From~\eqref{eq:absorb2} with $k=j-1$, it holds whenever
+$v_p\lvert 2\ell{+}1{-}2j\rvert \le v_p(j)$.
+If both conditions failed, then $p^{v_p(2\ell-j)+1}$ would divide
+$2\ell{-}1{-}2j$ and $p^{v_p(j)+1}$ would divide $2\ell{+}1{-}2j$.
+But $(2\ell{+}1{-}2j)-(2\ell{-}1{-}2j)=2$, so the smaller of the two
+prime powers would divide~$2$, contradicting the fact that $p$ is odd.
+Hence at least one condition holds, establishing~\eqref{eq:binom-ub}.
+
+Since $p^{e_p}$ divides every coefficient of $A_n$, $B_n$, and~$C_n$,
+we obtain $\Delta_n = p^{2e_p}\Delta_n^{\#}$.
 
 We exhibit a coefficient of $\Delta_n$ with $p$-adic valuation exactly
 $2e_p$.  It suffices to find $k_0 \in \{1,\dots,N\} \setminus \{n,n+1\}$
@@ -833,7 +954,7 @@ $b_{k_0}^2$ and valuation $2e_p$ (see below for why $A_nC_n$ does not
 contribute).
 
 \emph{Existence of $k_0$ for $p \ge 5$.}
-Using~\eqref{eq:vpbk} and the identity
+Using~\eqref{eq:b-factored} and the identity
 $\binom{N}{n-1} = \binom{N}{n}\cdot n/(n+1)$, one computes
 \begin{equation}\label{eq:bk-shift}
 v_p(b_{n+j}) - v_p(b_n) = v_p\!\left(\textstyle\prod_{i=1}^{j}(n-i+1)\right)
@@ -851,8 +972,8 @@ at most one of $n$ and $m$ is divisible by~$p$.
 \emph{Case $p \nmid m$:} $v_p(m) = 0$, so $v_p(b_{n-1}) - v_p(b_n)
 = -v_p(n) \le 0$.  Thus $v_p(b_{n-1}) \le v_p(b_n)$.
 If the minimum $e_p$ is attained at $k=n$ or $k=n+1$, then this
-inequality shows it is also attained at the off-center index $k=n-1$.
-Otherwise the minimum is already attained at some off-center index.
+inequality shows it is also attained at the off-centre index $k=n-1$.
+Otherwise the minimum is already attained at some off-centre index.
 In either case there exists $k_0 \notin \{n,n+1\}$ with
 $v_p(b_{k_0}) = e_p$.
 
@@ -891,7 +1012,7 @@ v_p\!\left(\frac{\binom{N}{n}}{\binom{N}{n-p^a}}\right)
 = v_p(r) - v_p(r-1) = -v_p(r-1) \le 0,
 \]
 giving $v_p(b_{k_0}) \le v_p(b_n)$.
-Thus $e_p$ is achieved at the off-center index~$k_0$.
+Thus $e_p$ is achieved at the off-centre index~$k_0$.
 
 Now consider the square monomial $(f_{k_0}f_{N+1-k_0})^2$ in
 $\Delta_n = B_n^2 - 4A_nC_n$.
@@ -1127,7 +1248,7 @@ Combining parts~(i) and~(ii): $\sqf(S(n)) = a(n+2)$.
 The proof of part~(ii) for $p=3$ in the non-prime-power case uses
 a different witness construction from the $p \ge 5$ case, based on
 ternary digit recursions.  This is developed in
-Section~\ref{sec:p3-draft} below.
+\S\ref{sec:p3-draft} below.
 \end{remark}
 
 \subsection{The prime $p=2$}\label{subsec:p2}
@@ -1139,40 +1260,322 @@ contributes to the squarefree part of~$S(n)$.
 For every $n \ge 1$, $v_2(S(n))$ is even.
 \end{proposition}
 
+The proof uses Gauss's lemma for multivariate polynomials over~$\BZ$,
+which asserts $\cont(fg) = \cont(f)\cont(g)$, together with a structural
+decomposition of~$\Delta_n$.
+
 \begin{proof}
-\emph{Case $m$ not a power of~$2$.}
-The cancellation-free argument of Proposition~\ref{prop:nonpp} applies
-verbatim: the valuation shift formula
-$v_2(b_{n-1})-v_2(b_n) = v_2(m)-v_2(n)+v_2(3) = v_2(m)-v_2(n)$
-(since $v_2(3)=0$) gives an off-centre witness exactly as
-in~\S\ref{subsec:nonpp} (for the case $2\nmid m$) or the
-complete-residue-system argument (for $2\mid m$, $m$ not a $2$-power).
-Hence $v_2(S(n))=2e_2$ is even.
+\emph{Base case $n=1$.}
+Direct computation gives $S(1)=192=2^6\cdot3$, so $v_2(S(1))=6$ is even.
 
-\emph{Case $m=2^k$ ($k\ge 2$; note $k=1$ gives $n=0$).}
-The rank-$1$ collapse (Lemma~\ref{lem:rank1}) shows
-$Q_n^{\#} \equiv \lambda(f_n x - f_{n+1}z)^2 \pmod{2}$.
-In particular $B^{\#} \equiv -2\lambda f_n f_{n+1} \equiv 0 \pmod{2}$,
-so $2 \mid B^{\#}$.  Then
+\medskip\noindent\emph{Setup ($n\ge 2$).}
+Since $\beta(n,N{-}j) = \alpha(n,j)$ and $\binom{N}{j}=\binom{N}{N{-}j}$,
+the $\alpha^2$-term at index~$j$ and the $\beta^2$-term at index~$N{-}j$
+contribute equally to each monomial of~$B_n$.  Hence every coefficient
+of~$B_n$ is even: write $B_n = 2G$ for a polynomial~$G$ with integer
+coefficients.  The coefficient of~$G$ at $f_jf_{N+1-j}$ is the sum of the
+$\alpha^2$-contributions from all summand indices mapping to
+$\{j,\,N{+}1{-}j\}$.
+Then
 \[
-(B^{\#})^2 - 4A^{\#}C^{\#} \equiv 0 \pmod{4},
+\Delta_n = (2G)^2 - 4A_nC_n = 4(G^2 - A_nC_n),
 \]
-since both $(B^{\#})^2$ and $4A^{\#}C^{\#}$ are divisible by~$4$.
-Hence $v_2(\cont(\Delta_n^{\#})) \ge 2$, giving
-$v_2(S(n)) \ge 2e_2 + 2$.
+so $S(n) = \cont(\Delta_n) = 4\cdot\cont(G^2 - A_nC_n)$ and
+$v_2(S(n)) = 2 + v_2(\cont(G^2-A_nC_n))$.  It therefore suffices to
+show that $v_2(\cont(G^2-A_nC_n))$ is even.
 
-For the upper bound, the same deformation specialization as
-in~\S\ref{subsec:pp} (at distance $t=2^{k-1}$) gives
-$B^{\#} \equiv 2u + 2\mu \pmod{4}$ with $2 \nmid u,\mu$.
-Expanding:
+\medskip\noindent\emph{Gauss's lemma.}
+By Gauss's lemma for multivariate polynomials over~$\BZ$:
+\begin{align*}
+\cont(G^2) &= \cont(G)^2, \\
+\cont(A_nC_n) &= \cont(A_n)\cdot\cont(C_n).
+\end{align*}
+Since $A_n$ and~$C_n$ have the same scalar coefficients
+$\binom{N}{i}\alpha_i\beta_i$ attached to structurally symmetric
+monomials, $\cont(A_n)=\cont(C_n)$, so
+$\cont(A_nC_n)=\cont(A_n)^2$.
+Both $v_2(\cont(G)^2)$ and $v_2(\cont(A_n)^2)$ are even.
+
+\medskip\noindent\emph{Case~A: $v_2(\cont(G)^2)\ne v_2(\cont(A_n)^2)$.}
+When the two even numbers $v_2(\cont(G)^2)$ and $v_2(\cont(A_n)^2)$
+are distinct, every coefficient of~$G^2$ has $v_2 \ge v_2(\cont(G)^2)$
+and every coefficient of~$A_nC_n$ has $v_2 \ge v_2(\cont(A_n)^2)$.
+By the ultrametric property of~$v_2$,
 \[
-(B^{\#})^2 - 4A^{\#}C^{\#}
-\equiv (2u+2\mu)^2 - 4u^2
-= 4\mu(2u+\mu) \pmod{4\cdot 2}.
+v_2(\cont(G^2-A_nC_n))
+= \min\bigl(v_2(\cont(G)^2),\; v_2(\cont(A_n)^2)\bigr),
 \]
-Since $\mu$ is odd and $2u+\mu$ is odd (even plus odd),
-$v_2(4\mu(2u+\mu))=2$.  Combined with the lower bound:
-$v_2(\cont(\Delta_n^{\#})) = 2$, so $v_2(S(n)) = 2e_2+2$, which is even.
+which is the smaller of two distinct even numbers, hence even.
+
+This case occurs whenever $n+2$ is \emph{not} a power of~$2$.
+We now prove that $v_2(\cont(A_n)) = v_2(\cont(G))+1$ under this
+hypothesis.  First, every coefficient of~$A_n$ is even: for $i<n$
+the monomial $f_if_{N-i}$ receives equal contributions from
+indices~$i$ and~$N{-}i$.  Indeed, $N=2n$ is even, so
+$(-1)^{N-i}=(-1)^i$, and the scalar symmetry
+$\binom{N}{i}\alpha_i\beta_i = \binom{N}{N{-}i}\alpha_{N-i}\beta_{N-i}$
+ensures both contributions have the same sign and magnitude,
+giving a factor of~$2$.  At the centre $i=n$, the coefficient is
+$(-1)^n\binom{N}{n}\gamma^2$.  This is even because
+$\binom{2n}{n}=2\binom{2n{-}1}{n{-}1}$.
+Moreover, each $A_n$-coefficient divided by~$2$ has
+$v_2 \ge v_2(N!) + v_2(M!) - c_{\max} = v_2(\cont(G))$,
+where $c_{\max}$ is defined below.
+Using $\operatorname{scalar}_{AB}(n,i) = N!\,(M{-}i)!\,(i{+}1)!$
+and the factorial identity
+$v_2(a!) + v_2(b!) = v_2((a{+}b)!) - v_2\binom{a+b}{a}$
+with $a=M{-}i$, $b=i$, one obtains
+\begin{equation}\label{eq:v2-scalarAB}
+v_2(\operatorname{scalar}_{AB}(n,i))
+  = v_2(N!) + v_2(M!) - v_2\tbinom{M}{i} + v_2(i{+}1).
+\end{equation}
+For \emph{off-centre} $i \ne n$:
+the $A_n$-coefficient divided by~$2$ equals
+$\operatorname{scalar}_{AB}(n,i)$ (from the additive pairing).
+Since $v_2\binom{M}{i} \le c_{\max}$ and $v_2(i{+}1) \ge 0$,
+\eqref{eq:v2-scalarAB} gives
+$v_2 \ge v_2(N!) + v_2(M!) - c_{\max}$.
+For the \emph{centre} $i=n$:
+the coefficient divided by~$2$ is
+$\binom{2n{-}1}{n{-}1}\gamma^2 = \operatorname{scalar}_{AB}(n,n)/2$,
+with
+$v_2 = v_2(\operatorname{scalar}_{AB}(n,n)) - 1
+     = v_2(N!) + v_2(M!) - v_2\tbinom{M}{n} + v_2(n{+}1) - 1$.
+We need this $\ge v_2(N!) + v_2(M!) - c_{\max}$,
+equivalently
+\begin{equation}\label{eq:centre-ineq}
+c_{\max} - v_2\tbinom{M}{n} + v_2(n{+}1) \ge 1.
+\end{equation}
+When $n$ is odd, $n{+}1$ is even so $v_2(n{+}1) \ge 1$,
+and $c_{\max} \ge v_2\binom{M}{n}$ by definition,
+giving~\eqref{eq:centre-ineq}.
+When $n$ is even, $v_2(n{+}1) = 0$,
+and~\eqref{eq:centre-ineq} requires the strict inequality
+$c_{\max} > v_2\binom{M}{n}$,
+which is the content of the following lemma.
+
+\begin{lemma}\label{lem:centre-not-max}
+For even $n \ge 2$ with $n+2$ not a power of~$2$,
+\[
+\max_{0 \le j \le 2n}\, v_2\tbinom{2n+1}{j}
+\;>\; v_2\tbinom{2n+1}{n}.
+\]
+\end{lemma}
+
+\begin{proof}
+Write $M = 2n{+}1$ and let $s_2(m)$ denote the binary digit sum (popcount) of~$m$.
+By Kummer's theorem in its digit-sum form,
+\begin{equation}\label{eq:kummer-s2}
+v_2\tbinom{M}{j} \;=\; s_2(j) + s_2(M - j) - s_2(M).
+\end{equation}
+Since $M = 2n{+}1$, we have $s_2(M) = s_2(n) + 1$.
+For the central index $j = n$, the complementary index is $M - n = n{+}1$, giving
+$v_2\binom{M}{n} = s_2(n) + s_2(n{+}1) - s_2(n) - 1 = s_2(n{+}1) - 1$.
+
+Since $n$ is even and $n{+}2$ is not a power of~$2$, we may write
+$n + 2 = 2^{a+1}(2r+1)$ with $a \ge 0$ and $r \ge 1$.
+Set $u = 2^a(2r{+}1) - 1$, so that $n = 2u$.
+Using the identity $s_2(2^a m - 1) = s_2(m{-}1) + a$ (valid for $m \ge 1$),
+one computes
+\[
+s_2(n) = s_2(2u) = s_2(u) = s_2(r) + a, \qquad
+s_2(n{+}1) = s_2(2u{+}1) = s_2(u) + 1 = s_2(r) + a + 1,
+\]
+so $v_2\binom{M}{n} = s_2(r) + a$.
+
+We exhibit an explicit even witness $j_0 < n$ with a strictly larger valuation.
+Set $j_0 = 2(2^{a+1}r - 1)$.
+Since $2^{a+1}r < 2^a(2r{+}1)$, we have $j_0 < 2u = n$, and $j_0$ is
+manifestly even.  The digit-sum identities give
+\[
+s_2(j_0) = s_2(2^{a+1}r - 1) = s_2(r{-}1) + a + 1,
+\]
+and a short calculation shows $M - j_0 = 2(2^{a+1}(r{+}1) - 1) + 1$, whence
+\[
+s_2(M - j_0) = s_2(2^{a+1}(r{+}1) - 1) + 1 = s_2(r) + a + 2.
+\]
+Substituting into~\eqref{eq:kummer-s2}:
+$v_2\binom{M}{j_0} = s_2(r{-}1) + a + 2$.
+Since $r = (r{-}1) + 1$ and adding~$1$ can increase the digit sum by at most~$1$,
+we have $s_2(r) \le s_2(r{-}1) + 1$, and therefore
+\[
+v_2\tbinom{M}{j_0} = s_2(r{-}1) + a + 2 > s_2(r) + a = v_2\tbinom{M}{n}. \qedhere
+\]
+\end{proof}
+
+\noindent
+Assuming Lemma~\ref{lem:centre-not-max},
+inequality~\eqref{eq:centre-ineq} holds for all
+$n \ge 2$ with $n+2$ not a power of~$2$.
+Hence $v_2(\cont(A_n)) \ge v_2(\cont(G))+1$.
+
+For the reverse inequality, we show that $\cont(G)$ achieves
+$v_2(\cont(A_n))-1$.
+Set $M = 2n{+}1$.  By the factored formula~\eqref{eq:b-factored},
+the $G$-coefficient at~$f_jf_{M-j}$ has absolute value
+$N!\cdot|M{-}2j|\cdot(M{-}j)!\cdot j!$.
+Since $M{-}2j$ is always odd, its $2$-adic valuation is
+$v_2(N!) + v_2((M{-}j)!\cdot j!)
+= v_2(N!) + v_2(M!) - v_2\binom{M}{j}$,
+where the last step uses $v_2(a!\cdot b!) = v_2((a{+}b)!) - v_2\binom{a+b}{a}$.
+Thus $v_2(\cont(G)) = v_2(N!) + v_2(M!) - c_{\max}$,
+where $c_{\max} = \max_{0\le j\le 2n} v_2\binom{M}{j}$.
+Similarly, the off-centre $A_n$-coefficient at~$f_if_{N-i}$ (for $i<n$)
+is $2(-1)^i\binom{N}{i}\alpha_i\beta_i$, with
+$v_2 = 1 + v_2(N!) + v_2((M{-}i)!) + v_2((i{+}1)!)$.
+For even~$i$, $M{-}i$ is odd, so $v_2((M{-}i)!) = v_2((M{-}i{-}1)!)$ and
+$v_2 = 1 + v_2(N!) + v_2(M!) - v_2\binom{M}{i+1}$.
+For $M$ odd, the consecutive-pair identity
+$\binom{M}{2r}/\binom{M}{2r{+}1} = (2r{+}1)/(M{-}2r)$.
+Since $M$ is odd and $2r$ is even, $M{-}2r$ is odd; and $2r{+}1$ is odd.
+The ratio is therefore a quotient of two odd numbers, so
+$v_2\binom{M}{2r} = v_2\binom{M}{2r{+}1}$.
+Therefore $c_{\max}$ is achieved at some even index $j_0$.
+We claim we can take $j_0 < n$ (so that $j_0$ is off-centre).
+Indeed, $j_0 \ne n$ by Lemma~\ref{lem:centre-not-max}
+(which gives $v_2\binom{M}{n} < c_{\max}$).
+If $j_0 > n$, set $j_1 = 2n - j_0$; then $j_1$ is even,
+$j_1 < n$, and
+$v_2\binom{M}{j_1} = v_2\binom{M}{2n+1-j_0} = v_2\binom{M}{j_0} = c_{\max}$,
+where the first equality uses the consecutive-pair identity
+(since $2n{+}1{-}j_0$ is odd) and the binomial symmetry
+$\binom{M}{j_0} = \binom{M}{M-j_0} = \binom{M}{2n+1-j_0}$.
+So we may assume $j_0 < n$.
+The corresponding off-centre $A_n$-coefficient at $i = j_0$ has
+$v_2 = 1 + v_2(N!) + v_2(M!) - v_2\binom{M}{j_0+1}
+= 1 + v_2(N!) + v_2(M!) - v_2\binom{M}{j_0}
+= 1 + v_2(\cont(G))$, showing
+$v_2(\cont(A_n)) = v_2(\cont(G))+1$.
+
+\medskip\noindent\emph{Case~B: $v_2(\cont(G)^2)= v_2(\cont(A_n)^2)$.}
+This occurs precisely when $n+2=2^k$ ($k \ge 2$), in which case
+$v_2(\cont(G))=v_2(\cont(A_n))$.
+
+Set $d = v_2(\cont(G))$.  Since $2^d$ divides every coefficient
+of~$G$, $A_n$, and~$C_n$, define the quotient polynomials
+$G' = G/2^d$, $A' = A_n/2^d$, $C' = C_n/2^d$.
+These have integer coefficients because $2^d$ divides every coefficient
+of~$G$, $A_n$, and~$C_n$.  Then
+$G^2-A_nC_n = 2^{2d}(G'^{\,2}-A'C')$, so
+$v_2(\cont(G^2-A_nC_n))=2d+v_2(\cont(G'^{\,2}-A'C'))$.
+It suffices to show $v_2(\cont(G'^{\,2}-A'C'))$ is even.  We prove
+$4 \mid \cont(G'^{\,2}-A'C')$, giving $v_2\ge 2$, and the pair
+specialization provides the matching upper bound $v_2 \le 2$.
+
+\smallskip\noindent\emph{Off-centre divisibility of $G'$, $A'$, $C'$.}
+Lemma~\ref{lem:central} applies to \emph{all} primes,
+including~$2$, because its proof uses only $n+2 = p^k$ and
+the factorial structure of~$\operatorname{scalar}_{AB}$, with no
+assumption that $p$ is odd.  It gives the strict central dominance:
+$v_2(\operatorname{scalar}_{AB}(n,i)) > d$ for every off-centre
+index $i \ne n$.  Each $G$-coefficient is a sum of terms, each
+involving some $\operatorname{scalar}_{A2}(n,j)$ with $j$ off-centre;
+since $\operatorname{scalar}_{A2}(n,j)$ satisfies the same central minimum
+property---namely $v_2(\operatorname{scalar}_{A2}(n,j)) > d$ for $j\ne n$,
+as $\operatorname{scalar}_{A2}(n,n) = \operatorname{scalar}_{AB}(n,n)$
+and the central-minimum proof applies identically to
+$\operatorname{scalar}_{A2}$---every off-centre $G$-coefficient
+has $v_2 > d$, giving $v_2(G'_j) \ge 1$ after dividing by~$2^d$.
+The centre coefficient of~$G'$ has $v_2 = 0$, since the centre
+$G$-coefficient achieves the minimum $v_2 = d = v_2(\cont(G))$.
+For~$A_n$: each off-centre coefficient is
+$2\cdot(-1)^i\cdot\operatorname{scalar}_{AB}(n,i)$.  The factor of~$2$
+arises from the additive pairing proved in the Setup: each off-centre
+$A_n$-monomial $f_if_{N-i}$ receives two equal contributions from
+indices~$i$ and $N{-}i$ with the same sign.  By central dominance,
+$v_2(\operatorname{scalar}_{AB}(n,i)) \ge d+1$, so the total
+$v_2 \ge 1 + (d+1) = d+2$.  After dividing by~$2^d$:
+$v_2(A'_i) \ge 2$ for off-centre~$i$, while $v_2(A'_n) = 0$.
+The same holds for~$C'$.
+
+\smallskip\noindent\emph{First factor of~$2$ (Frobenius over~$\BF_2$).}
+Over~$\BF_2$, only the centre monomials of $G'$, $A'$, $C'$ survive:
+$\overline{G'} = \bar g\, f_nf_{n+1}$,\;
+$\overline{A'} = \bar a\, f_n^2$,\;
+$\overline{C'} = \bar a\, f_{n+1}^2$,
+where $\bar g = \bar a = 1 \in \BF_2$.  Then
+$\overline{G'}^{\,2} = f_n^2f_{n+1}^2 = \overline{A'}\,\overline{C'}$,
+so $G'^{\,2}-A'C' \equiv 0\pmod{2}$.
+
+\smallskip\noindent\emph{Second factor of~$2$ (mod-$4$ analysis).}
+Write $G' = g\cdot f_nf_{n+1} + 2R_G$, $A' = a\cdot f_n^2 + 2R_A$,
+$C' = a\cdot f_{n+1}^2 + 2R_C$, where $g,a$ are odd integers and
+$R_G,R_A,R_C$ have integer coefficients.  Since $v_2(A'_i)\ge 2$ for
+off-centre~$i$, as proved in the preceding paragraph,
+$R_A$ and~$R_C$ have all \emph{even}
+coefficients.  Expanding $G'^{\,2}-A'C'$:
+\begin{enumerate}[label=(\roman*)]
+\item \emph{Centre--centre:}
+  $(g^2-a^2)f_n^2f_{n+1}^2$.
+  Both $g$ and~$a$ are odd, so $4\mid(g{-}a)(g{+}a) = g^2-a^2$.
+
+\item \emph{Centre--off-centre from~$A'C'$:}
+  $-2a(f_n^2 R_C + R_A f_{n+1}^2)$.
+  Each coefficient of $R_A$ and~$R_C$ is even, so
+  $2a\cdot(\text{even}) \equiv 0\pmod{4}$.
+
+\item \emph{Remaining terms}
+  ($4gf_nf_{n+1}R_G$, $4R_G^2$, $-4R_AR_C$)
+  carry an explicit factor of~$4$.
+\end{enumerate}
+Hence $4$ divides every coefficient of $G'^{\,2}-A'C'$, giving
+$v_2(\cont(G'^{\,2}-A'C'))\ge 2$.
+
+\smallskip\noindent\emph{Upper bound.}
+For any off-centre $k_0\notin\{n,n+1\}$, the pair specialization
+$\phi_{k_0}$ satisfies $A_n(\phi_{k_0})=C_n(\phi_{k_0})=0$, so
+$(G^2-A_nC_n)(\phi_{k_0}) = G(\phi_{k_0})^2 = (b_{k_0}/2)^2$.
+Hence $\cont(G'^{\,2}-A'C')$ divides $(b_{k_0}/(2^{d+1}))^2$.
+
+We exhibit $k_0 = n + 2^{k-1}$.  Since $k \ge 2$, we have
+$k_0 = 3\cdot 2^{k-1} - 2$.  This satisfies $1 \le k_0 \le 2n$
+and $k_0 \ne n$, $k_0 \ne n{+}1$, so $k_0$ is off-centre.
+Moreover, $k_0 = 3\cdot 2^{k-1} - 2$ is even, so $k_0 + 1$ is odd
+and $v_2(k_0{+}1) = 0$.  Also, $|2n{+}1{-}2k_0| = |2n+1-2n-2^k|
+= 2^k - 1$, which is odd.  From the factored form~\eqref{eq:b-factored}:
+\[
+v_2(b_{k_0}) = 1 + v_2(\operatorname{scalar}_{AB}(n,k_0)) - v_2(k_0{+}1)
+             = 1 + v_2(\operatorname{scalar}_{AB}(n,k_0)).
+\]
+We claim $v_2(\operatorname{scalar}_{AB}(n,k_0)) = d + 1$.
+Lemma~\ref{lem:central} gives $\ge d+1$; it remains to show
+$v_2(\operatorname{scalar}_{AB}(n,k_0)) \le d + 1$.
+Since $\operatorname{scalar}_{AB}(n,i) = (2n)!\,(2n{+}1{-}i)!\,(i{+}1)!$,
+Legendre's formula gives
+$v_2(\operatorname{scalar}_{AB}(n,i))
+ = v_2((2n)!) + v_2((2n{+}1{-}i)!) + v_2((i{+}1)!)$.
+At $i = n$: this equals $d$.  At $i = k_0 = n + 2^{k-1}$:
+\begin{align*}
+v_2((k_0{+}1)!) - v_2((n{+}1)!)
+  &= v_2\!\prod_{j=n+2}^{k_0+1} j
+  = \sum_{j=n+2}^{k_0+1} v_2(j), \\
+v_2((2n{+}1{-}k_0)!) - v_2((n{+}1)!)
+  &= -\,v_2\!\prod_{j=2n+2-k_0}^{n+1} j
+  = -\sum_{j=n+2-2^{k-1}}^{n+1} v_2(j).
+\end{align*}
+The numerator set $\{n{+}2,\ldots,n{+}2^{k-1}{+}1\}$ and the
+denominator set $\{n{+}2{-}2^{k-1},\ldots,n{+}1\}$ each have
+$2^{k-1}$ elements and form complete residue systems modulo~$2^{k-1}$.
+They therefore have equal sums of $v_2$-values at every
+$2$-adic level below~$k{-}1$.  The unique multiple of~$2^{k-1}$
+in the numerator is $n{+}2 = 2^k$, with $v_2 = k$;
+the unique multiple of~$2^{k-1}$ in the denominator is
+$n{+}2{-}2^{k-1} = 2^{k-1}$, with $v_2 = k{-}1$.
+Hence the total difference is $k - (k{-}1) = 1$, giving
+$v_2(\operatorname{scalar}_{AB}(n,k_0)) = d + 1$.
+
+Since $n{+}1 = 2^k{-}1$ is odd:
+$v_2(b_n) = 1 + d$ and $v_2(b_{k_0}) = 1 + (d+1) = d + 2$.
+Therefore $v_2(b_{k_0}/2) = d+1$,
+$v_2(b_{k_0}/2^{d+1}) = 1$, and $(b_{k_0}/2^{d+1})^2$ has $v_2 = 2$.
+Hence $v_2(\cont(G'^{\,2}-A'C'))\le 2$.
+
+\smallskip
+Combining: $v_2(\cont(G'^{\,2}-A'C'))=2$, which is even.
+
+\medskip\noindent\emph{Conclusion.}
+In both cases, $v_2(\cont(G^2-A_nC_n))$ is even, so
+$v_2(S(n))=2+v_2(\cont(G^2-A_nC_n))$ is even.
 \end{proof}
 
 %======================================================================
@@ -1263,7 +1666,7 @@ Thus minimizing $v_3(b_k)$ among indices $k$ with $3 \nmid k$ is equivalent
 to maximizing $v_3\binom{N}{k}$ among those same indices.
 
 Thus the remaining $p=3$ problem is fundamentally combinatorial: find an
-off-center lower-half index $k$ with $3 \nmid k$ for which
+off-centre lower-half index $k$ with $3 \nmid k$ for which
 $v_3\binom{N}{k}$ is maximal.
 
 \subsection{Ternary recursions}
@@ -1654,7 +2057,7 @@ The author reviewed and corrected the output.
 \medskip
 \emph{Phase 4: Formal verification.}
 The complete proof was formalized in Lean~4 with Mathlib, using a
-combination of Aristotle (Harmonic) and Claude Code.  The formalization
+combination of Aristotle \cite{Aristotle2025} (Harmonic), Claude Code, and OpenAI Codex.  The formalization
 proceeded iteratively: Claude Code prepared Lean files containing
 theorem statements with \texttt{sorry} placeholders and detailed
 proof sketches, which were submitted to Aristotle for automated proof
@@ -1671,10 +2074,20 @@ in an earlier draft of Proposition~\ref{prop:nonpp}: the valuation
 shift formula for $v_p(b_{n+2}) - v_p(b_n)$ had the wrong sign in
 one case, which was corrected using a complete-residue-system argument.
 
-The final formalization is a single self-contained Lean~4 file of
-approximately 6000 lines, containing zero \texttt{sorry} statements
-and zero \texttt{axiom} declarations.  It compiles against Mathlib
-with no errors.
+While Claude Code produced the bulk of the formalization across all
+three prime cases ($p \ge 5$, $p = 3$, and $p = 2$), a few
+proof-engineering gaps remained in the $p = 2$ case---particularly
+around binary carry combinatorics and \texttt{MvPolynomial} coefficient
+extraction.  These were patched using OpenAI's Codex, which proved
+several targeted lemmas including the key combinatorial result
+\texttt{centre\_not\_max} (that the central binomial coefficient does
+not achieve the maximum $2$-adic valuation when $n+2$ is not a power
+of~$2$).
+
+The final formalization comprises approximately $14{,}500$ lines of
+Lean~4 across twenty-five modules, containing zero \texttt{sorry}
+statements and zero \texttt{axiom} declarations.  It compiles against
+Mathlib with no errors.
 
 \subsection*{Companion materials}
 
@@ -1688,10 +2101,9 @@ and lemma by direct symbolic computation, including the closed-form
 coefficient formula (Lemma~\ref{lem:Cnr}), the cancellation-free
 $B_n$~coefficients (Lemma~\ref{lem:bk}), and the full main theorem
 (Theorem~\ref{thm:main}) for all $n \le 30$.
-\item A single self-contained Lean~4 file (\texttt{Complete.lean},
-$\approx 6000$~lines) that formalizes Theorem~\ref{thm:main} for
-all primes $p \ge 2$ (parts~(i) and~(ii) for $p \ge 5$, plus
-part~(i) for $p = 2$), compiling against Mathlib with zero
+\item A modular Lean~4 formalization ($\approx 14{,}500$~lines across
+twenty-five files) that formalizes Theorem~\ref{thm:main} for
+all primes $p \ge 2$, compiling against Mathlib with zero
 \texttt{sorry} statements and zero \texttt{axiom} declarations.
 \end{itemize}
 
@@ -1731,13 +2143,13 @@ this paper.
 
 \noindent The author thanks Manjul Bhargava for suggesting this problem as the very
 first question to consider at the start of the author's PhD nearly a decade ago, and for his
-invaluable advice and encouragement throughout. We are grateful to Joe
+invaluable advice and encouragement throughout.  The author is also grateful to Joe
 Harris, Igor Dolgachev, Anand Patel, Melanie Wood, and Stanley Yao Xiao for
 enlightening conversations.  This research was supported by the Paul and
 Daisy Soros Fellowship and the NSF Graduate Research Fellowship.
 
-The AI-assisted workflow described in Section~\ref{sec:ai} used Claude Code
-(Anthropic) and Aristotle (Harmonic).
+The AI-assisted workflow described in \S\ref{sec:ai} used Claude Code
+(Anthropic), Aristotle \cite{Aristotle2025} (Harmonic), and Codex (OpenAI).
 
 %======================================================================
 % REFERENCES

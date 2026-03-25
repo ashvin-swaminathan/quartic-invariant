@@ -10,3 +10,6 @@ require mathlib from git
 @[default_target]
 lean_lib «QuarticInvariant» where
   srcDir := "."
+
+lean_lib «Modular» where
+  roots := #[`Modular]
