@@ -305,7 +305,7 @@ private lemma even_vp_H_of_neq_val (n : ℕ)
 /-! ## Base case -/
 
 -- Direct computation evaluating Δ₁ on an explicit 5-coord specialization; `decide`/`norm_num` heavy.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 400000 in
 /-- v₂(S(1)) is even. Direct computation. -/
 private theorem even_vp_S_one : Even (padicValNat 2 (S 1)) := by
   -- Evaluate Δ₁ at the specialization c(j) = [j=1 ∨ j=2]

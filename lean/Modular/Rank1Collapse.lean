@@ -165,7 +165,7 @@ lemma cross_term_dvd (p : ℕ) [Fact p.Prime] (k : ℕ) (hk : 1 ≤ k)
     exact Int.dvd_of_dvd_mul_right_of_gcd_one (b := (n : ℤ)) h2 hp_cop_n
 
 -- Splits B_eval into 4 residue classes, reassembles mod p^{e+1}; `ring`+`omega`-heavy.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 800000 in
 /-- Main intermediate: (n+1) · B_eval ≡ 2(-1)ⁿ · scalar_AB · cₙ · c_{n+1} (mod p^{e+1}).
 
 The proof splits B_eval into i=n, i=n-1, i=n+1, and the rest.
@@ -471,7 +471,7 @@ def b_k (N k : Nat) : Int :=
   (2 * (-1 : Int)^k * (Nat.factorial N : Int)^2 * ((N : Int) + 1 - k) * ((N : Int) + 1 - 2*k)) / (Nat.choose N k)
 
 -- `coeff_k` expands into a 4-term sum of (-1)^·(choose·factorial)^2 products; reassembly is heavy.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 400000 in
 theorem cancellation_free_Bn_coefficient (n k : Nat) (h_n : n ≥ 1) (h_k_ge : k ≥ 1) (h_k_le : k ≤ 2*n) :
   let N := 2*n
   coeff_k N k = b_k N k := by

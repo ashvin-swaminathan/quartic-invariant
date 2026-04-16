@@ -912,7 +912,7 @@ private lemma exists_valid_min_vp_b_p3 (n : ℕ) (hn : 3 ≤ n)
     exact ⟨k_min, hk_min_bounds.1, hk_min_bounds.2, hkn.1, hkn.2, fun k hk => hk_min_le k hk⟩
 
 -- Deformation argument specialized to p=3; many case splits combining carry and rank-1 lemmas.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 800000 in
 private theorem even_of_not_prime_power_p3 (n : ℕ) (hn : 2 ≤ n)
     (h_not_pp : ∀ k : ℕ, 1 ≤ k → n + 2 ≠ 3 ^ k) :
     Even (padicValNat 3 (S n)) := by

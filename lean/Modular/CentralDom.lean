@@ -199,7 +199,7 @@ So the filter is empty for all positions.
 For the formal proof: show that for all i in [1, b), p^i > j % p^i + (2m-j) % p^i. This holds because j + (2m-j) = 2m, and 2m % p^i = p^i - 2 < p^i (for p ≥ 3, i ≥ 1). Since there are no carries (j % p^i + (2m-j) % p^i = (j + (2m-j)) % p^i + c * p^i where c is a carry), and the total is 2m, with each digit position producing sum < p (no carry), we get j % p^i + (2m-j) % p^i = 2m % p^i = p^i - 2 < p^i.
 -/
 -- Kummer-style carry analysis over base-p digits; `decide`/`omega` on digit bounds is heavy.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 400000 in
 theorem choose_val_zero_when_complement_div (p k : ℕ) [hp : Fact p.Prime] (hp_odd : p ≠ 2)
     (hk : 1 ≤ k) (j : ℕ) (hj : j ≤ 2 * (p ^ k - 1))
     (hpb : p ∣ (2 * (p ^ k - 1) - j)) (hpj : ¬(p ∣ j)) :
@@ -259,7 +259,7 @@ Case 2 (p ∤ j, p ∤ (2m-j)): v_p(j) = 0, v_p(2m-j) = 0. LHS = v_p(C(2m,j)) + 
 Case 3 (p ∤ j, p | (2m-j)): v_p(j) = 0. By choose_val_zero_when_complement_div, v_p(C(2m,j)) = 0. By complement_val_bound, v_p(2m-j) ≤ k-1. LHS = 0 + v_p(2m-j) ≤ k-1 < k = k + 0 = RHS.
 -/
 -- Case split over `p ∣ j` / `p ∣ 2m-j` invokes the carry lemma above; stays heavy here.
-set_option maxHeartbeats 6400000 in
+set_option maxHeartbeats 400000 in
 theorem A2_dominance_helper (p k : ℕ) [hp : Fact p.Prime] (hp_odd : p ≠ 2) (hk : 1 ≤ k)
     (j : ℕ) (hj : j ≤ 2 * (p ^ k - 1)) (hj_ne_m : j ≠ p ^ k - 1)
     (hj_ne_n : j ≠ p ^ k - 2) :
