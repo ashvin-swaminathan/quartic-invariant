@@ -1,6 +1,5 @@
 import Mathlib
 
-set_option maxHeartbeats 800000
 noncomputable section
 
 /-- If 2 | (f.coeff m - a.coeff m) for all m, then 4 | (f²coeff m - a².coeff m) for all m.

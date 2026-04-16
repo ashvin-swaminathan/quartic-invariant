@@ -11,7 +11,6 @@ import Modular.P3Witness
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -912,6 +911,8 @@ private lemma exists_valid_min_vp_b_p3 (n : ℕ) (hn : 3 ≤ n)
   · push_neg at hkn
     exact ⟨k_min, hk_min_bounds.1, hk_min_bounds.2, hkn.1, hkn.2, fun k hk => hk_min_le k hk⟩
 
+-- Deformation argument specialized to p=3; many case splits combining carry and rank-1 lemmas.
+set_option maxHeartbeats 6400000 in
 private theorem even_of_not_prime_power_p3 (n : ℕ) (hn : 2 ≤ n)
     (h_not_pp : ∀ k : ℕ, 1 ≤ k → n + 2 ≠ 3 ^ k) :
     Even (padicValNat 3 (S n)) := by

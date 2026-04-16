@@ -6,7 +6,6 @@ import Modular.ScalarBounds
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -1501,6 +1500,8 @@ private lemma Bminus_k1_val (p : ℕ) [Fact p.Prime] (hp_odd : p ≠ 2)
       congr_arg Int.natAbs hid
     rw [← hv_prod, h_eq_abs, hv_RHS]
 
+-- Off-diagonal cancellation in A+C over a length-(2n+1) sum; many `simp [Finset.sum_…]` steps.
+set_option maxHeartbeats 6400000 in
 /-- A_eval + C_eval = 2*u under deform_spec_k1. The off-diagonal terms cancel:
     at each index i, c_i*c_{2n-i} + c_{i+1}*c_{2n+1-i} = 0 (for i ≠ n) or 2 (for i = n). -/
 private lemma AC_sum_k1 (n : ℕ) (hn : 3 ≤ n) :

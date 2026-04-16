@@ -4,7 +4,6 @@ import Modular.CentralDom
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -31,6 +30,8 @@ lemma pk_sub_one_le_n (p : ℕ) [hp : Fact p.Prime] (hp_odd : p ≠ 2)
 /-- n - p^{k-1} ≤ 2*n -/
 lemma sub_le_two_mul (n t : ℕ) : n - t ≤ 2 * n := by omega
 
+-- Kummer's theorem via explicit carry sums; geometric-series rewrites over Finset.Ico.
+set_option maxHeartbeats 6400000 in
 /-- Key Kummer difference: v_p(C(2n,n)) - v_p(C(2n,n-t)) = 1 when n+2 = p^k, t = p^{k-1}.
 This works for ALL odd primes, not just p ≥ 5.
 

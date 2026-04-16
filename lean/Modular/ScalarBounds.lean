@@ -3,7 +3,6 @@ import Modular.Defs
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -312,6 +311,8 @@ The key identity that makes this work at the integer level:
 
 Try: apply MvPolynomial.funext; intro x; simp [B_n, B_n_alt, MvPolynomial.eval_sum, MvPolynomial.eval_mul, MvPolynomial.eval_C, MvPolynomial.eval_X, MvPolynomial.eval_add, b_formula]; ring_nf; ...then use sum manipulation.
 -/
+-- `simp`+`ring` on a length-(2n+1) MvPolynomial sum; default heartbeats insufficient.
+set_option maxHeartbeats 6400000 in
 lemma B_n_eq_alt (n : ℕ) (hn : 0 < n) : B_n n = B_n_alt n := by
   refine' MvPolynomial.funext _;
   intro x

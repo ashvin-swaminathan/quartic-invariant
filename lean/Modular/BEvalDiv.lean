@@ -4,7 +4,6 @@ import Modular.CentralDom
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -157,6 +156,8 @@ Actually, this is a tricky formalization. The approach:
 
 This is quite involved. The subagent should try to use padicValNat_factorial and Nat.div properties.
 -/
+-- Legendre's formula applied with splitting `a + b = 2n+1`; many arithmetic rewrites.
+set_option maxHeartbeats 6400000 in
 lemma legendre_B_bound (p : ℕ) [Fact p.Prime] (k : ℕ) (hk : 1 ≤ k)
     (hp_odd : p ≠ 2) (n : ℕ) (hn : n + 2 = p ^ k)
     (a b : ℕ) (hab : a + b = 2 * n + 1) :
@@ -356,6 +357,8 @@ Use Finset.dvd_sum after proving the rewriting identity.
 
 ALTERNATIVELY, A MUCH SIMPLER approach: just apply Finset.dvd_sum to the COMBINED sum (after rewriting). Since the subagent can work with the full Lean API, it can do the sum manipulation using Finset.sum_add_distrib, Finset.sum_bij, etc.
 -/
+-- Sum-manipulation via `Finset.sum_bij` / `Finset.sum_add_distrib` on (2n+2)-term sum.
+set_option maxHeartbeats 6400000 in
 theorem B_eval_dvd_pe (p : ℕ) [Fact p.Prime] (k : ℕ) (hk : 1 ≤ k)
     (hp_odd : p ≠ 2) (n : ℕ) (hn : n + 2 = p ^ k) (hn_pos : 1 ≤ n) (c : ℕ → ℤ) :
     ∃ B' : ℤ, B_eval n c = (p : ℤ) ^ e_central p n * B' := by

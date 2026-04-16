@@ -10,7 +10,6 @@ import Modular.CoeffDivPP
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 6400000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
@@ -491,6 +490,8 @@ private lemma exists_valid_min_vp_b (p n : ℕ) [Fact p.Prime] (hp5 : 5 ≤ p) (
     push_neg at hkn
     exact ⟨k_min, hk_min_bounds.1, hk_min_bounds.2, hkn.1, hkn.2, fun k hk => hk_min_le k hk⟩
 
+-- Cancellation-free B-coefficient argument — many case splits on k vs n vs n+1.
+set_option maxHeartbeats 6400000 in
 theorem even_of_not_prime_power (p n : ℕ) [Fact p.Prime]
     (hp5 : 5 ≤ p) (hn : 2 ≤ n)
     (h_not_pp : ∀ k : ℕ, 1 ≤ k → n + 2 ≠ p ^ k) :

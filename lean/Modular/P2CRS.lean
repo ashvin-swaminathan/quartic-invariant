@@ -6,7 +6,6 @@ import Modular.CoeffDivPP
 
 set_option linter.mathlibStandardSet false
 open scoped BigOperators Nat Classical Pointwise
-set_option maxHeartbeats 12800000
 set_option maxRecDepth 4000
 noncomputable section
 namespace QuarticInvariant
